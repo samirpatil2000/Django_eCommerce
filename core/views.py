@@ -23,6 +23,7 @@ class HomeView(ListView):
     model=Item
     template_name ='core/home-page.html'
     context_object_name = 'object_list'
+    paginate_by = 3
 
 """the context in this case is change now it is not items any more now it is object_list"""
 
