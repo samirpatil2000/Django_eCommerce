@@ -20,6 +20,7 @@ LABEL_CHOICES = (
 class Item(models.Model):
     title=models.CharField(max_length=100)
     price=models.FloatField()
+    discount_price=models.FloatField(default=200)
     category=models.CharField(choices=CATEGORY_CHOICES,max_length=2 ,null=True,blank=True)
 
     """  In template you have to use {{ i.get_category_display }}  ==> Shirt  If   {{ i.category }} ===> S """
@@ -30,7 +31,7 @@ class Item(models.Model):
 
     slug=models.SlugField()
     desc=models.TextField(default="THis is desc ",max_length=500)
-    quantity=models.IntegerField(default=1)
+    # quantity=models.IntegerField(default=1)
 
 
     def __str__(self):
@@ -40,8 +41,8 @@ class Item(models.Model):
         return reverse('product-detail',kwargs={'slug':self.slug})
 
     def get_add_to_cart_url(self):
-        return reverse('add-to-cart',kwargs={'slug':self.slug})
-
+        return reverse('add_to_cart',kwargs={'slug':self.slug})
+    #
     def get_remove_from_cart_url(self):
         return reverse('remove_from_cart',kwargs={'slug':self.slug})
 

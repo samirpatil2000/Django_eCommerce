@@ -6,6 +6,8 @@
   <!-- Navbar -->
 
   <!--Main layout-->
+
+
   <main class="mt-5 pt-4">
     <div class="container dark-grey-text mt-5">
 
@@ -39,11 +41,18 @@
             </div>
 
             <p class="lead">
+            {% if object.discount_price %}
               <span class="mr-1">
-                <del>$200</del>
+                <del>{{ object.price }}</del>
               </span>
-              <span>${{ object.price }}</span>
-            </p>
+               <span>
+                   ${{ object.discount_price }}
+               </span>
+            {% else %}
+               <span>
+                   ${{ object.price }}
+               </span>
+            {% endif %}
             <p>
               <span>{{ object.title }}</span>
             </p>
@@ -63,9 +72,11 @@
              <a class="btn btn-primary btn-md my-0 p" href="{{ object.get_add_to_cart_url }}" type="submit">Add to cart
                 <i class="fas fa-shopping-cart ml-1"></i>
               </a>
-            <a class="btn btn-danger btn-md my-0 p" href="{{ object.get_remove_from_cart_url }}" type="submit">remove from cart
+
+              <a class="btn btn-danger btn-md my-0 p" href="{{ object.get_remove_from_cart_url }}" type="submit">Remove from cart
                 <i class="fas fa-shopping-cart ml-1"></i>
               </a>
+
 
 
           </div>
@@ -95,4 +106,8 @@
 
 </body>
 {%endblock body %}
+
+
+
+
 
