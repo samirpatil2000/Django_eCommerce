@@ -39,12 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django.contrib.sites',
+    'django_countries',
+    'crispy_forms',
 
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
 
-    'core'
+    'core',
 ]
 
 MIDDLEWARE = [

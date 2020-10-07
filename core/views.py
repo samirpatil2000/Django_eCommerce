@@ -6,9 +6,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render,get_object_or_404,redirect,reverse
 from django.views.generic.base import View
 
-from.models import Item,OrderItem,Order
+from.models import Item,OrderItem,Order,BillingAddress
 from django.views.generic import ListView,DetailView
 from django.utils import timezone
+
+
+from .forms import CheckoutForm
 # Create your views here.
 def index(request):
     context={
@@ -200,3 +203,58 @@ def add_single_item_from_cart(request, slug):
         order.items.add(order_item)
         messages.warning(request, "{} was added from your cart.".format(item))
         return redirect("order_summary")
+
+class CheckoutView(View):
+    def get(self,*args,**kwargs):
+        form=CheckoutForm()
+        context={
+            'form':form
+        }
+        return render(self.request,'core/checkout-page.html',context)
+
+    def post(self,*args,**kwargs):
+        form=CheckoutForm(self.request.POST or None)
+
+        try:
+            order=Order.objects.filter(user=self.request.user)
+            print(self.request.POST)
+            if form.is_valid():
+                shipping_address = form.cleaned_data.get('shipping_address')
+                home_address = form.cleaned_data.get('home_address')
+                country = form.cleaned_data.get('country')
+                zip = form.cleaned_data.get('zip')
+
+                # TODO: we have to more functionality to this field
+                # save_billing_address = form.cleaned_data.get['save_billing_address']
+                # save_info = form.cleaned_data.get['save_info']
+
+                """ if user select the payment option then we will redirect it to that specific payment option)"""
+                #payment_option = form.cleaned_data.get('payment_option')
+
+
+                """ here we are taking input from user and save this into the billing address model """
+
+                billing_address = BillingAddress(
+                    user=self.request.user,
+                    street_address=shipping_address,
+                    apartment_address=home_address,
+                    country=country,
+                    zip=zip,
+                )
+
+                """ Here we are saving this in the Billing Address Model"""
+                billing_address.save()
+
+                """ Now here we are saving this billing address in the order model """
+                order.billing_address=billing_address
+                order.save()
+
+                return redirect('checkouts')
+        except ObjectDoesNotExist:
+            messages.warning(self.request," User doesn't have any address ")
+            return redirect('order_summary')
+
+
+        messages.info(self.request, 'Failed To Checkout')
+        return redirect('checkouts')
+
