@@ -43,10 +43,21 @@ class HomeView(ListView):
 
 """the context in this case is change now it is not items any more now it is object_list"""
 
+class TestIndex(ListView):
+    model = Item
+    template_name = 'aws/index.html'
+    context_object_name = 'object_list'
+
 
 class ItemDetailView(DetailView):
     model = Item
     template_name = 'core/product-page.html'
+    context_object_name = 'object'
+
+
+class TestItemDetailView(DetailView):
+    model = Item
+    template_name = 'aws/single-product.html'
     context_object_name = 'object'
 
 @login_required
@@ -70,11 +81,11 @@ def add_to_cart(request, slug):
             order_item.quantity += 1
             order_item.save()
             messages.info(request,'{} added to your cart'.format(item))
-            return redirect("order_summary")
+            return redirect("test_index")
         else:
             order.items.add(order_item)
             messages.info(request, ' {} added to your cart'.format(item))
-            return redirect("order_summary")
+            return redirect("test_index")
     else:
         ordered_date = timezone.now()
         # order=OrderItem()
@@ -92,7 +103,7 @@ def add_to_cart(request, slug):
             user=request.user, ordered_date=ordered_date)
         order.items.add(order_item)
         messages.info(request, "{} is added to your cart.".format(item))
-        return redirect("product-detail",slug=slug)
+        return redirect("test_index")
 
 @login_required
 def remove_from_cart(request, slug):
@@ -365,3 +376,5 @@ class PaymentView(View):
         messages.warning(self.request, "Invalid data received")
         return redirect("/payment/stripe/")
 
+def templatingTesting(request):
+    return render(request,'aws/index.html',{})

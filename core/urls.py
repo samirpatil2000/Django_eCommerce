@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path,include
 from. import views
-from.views import HomeView,ItemDetailView,OrderSummaryView,CheckoutView,PaymentView
+from.views import HomeView,ItemDetailView,OrderSummaryView,CheckoutView,PaymentView,TestIndex,TestItemDetailView
 
 urlpatterns = [
    path('',HomeView.as_view(),name='index'),
@@ -16,5 +16,9 @@ urlpatterns = [
    path('add_single_item_from_cart/<slug>', views.add_single_item_from_cart, name='add_single_item_from_cart'),
    path('order_summary/', OrderSummaryView.as_view(), name='order_summary'),
    path('payment/<payment_option>', PaymentView.as_view(), name='payment'),
+
+   path('test/',TestIndex.as_view(),name='test_index'),
+   path('test_product/<slug>',TestItemDetailView.as_view(),name='test-product-detail'),
+
 
 ]
