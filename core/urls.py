@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path,include
 from. import views
-from.views import HomeView,ItemDetailView,OrderSummaryView,CheckoutView,PaymentView,TestIndex,TestItemDetailView
+from.views import HomeView,ItemDetailView,OrderSummaryView,CheckoutView,PaymentView,TestIndex,TestItemDetailView,TestOrderSummaryView
 
 urlpatterns = [
    path('',HomeView.as_view(),name='index'),
@@ -19,6 +19,7 @@ urlpatterns = [
 
    path('test/',TestIndex.as_view(),name='test_index'),
    path('test_product/<slug>',TestItemDetailView.as_view(),name='test-product-detail'),
-
+   path('test_order_summary/', TestOrderSummaryView.as_view(), name='test_order_summary'),
+   path('contact/',views.contact,name='contact')
 
 ]

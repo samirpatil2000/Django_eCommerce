@@ -1,5 +1,6 @@
 {% extends 'aws/base.html' %}
 {% block body %}
+{% load static %}
 
   <body>
     <!--================Header Menu Area =================-->
@@ -41,6 +42,82 @@
                 </tr>
               </thead>
               <tbody>
+              {% for order_item in object.items.all %}
+
+                <tr>
+                  <td>
+                    <div class="media">
+                      <div class="d-flex">
+                        <img
+                          src="{% static 'aws/img/product/single-product/cart-1.jpg' %}"
+                          alt=""
+                        />
+                      </div>
+                      <div class="media-body">
+                        <p>{{ order_item.item.title }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <h5>${{ order_item.item.price }}</h5>
+                  </td>
+              <td>
+                  <button class="reduce items-count" type="button">
+                    <a href="{% url 'remove_single_item_from_cart' order_item.item.slug %}">
+                       <i class="lnr lnr-chevron-left"></i>
+                    </a>
+                  </button>
+                     {{ order_item.quantity }}
+                  <button class="increase items-count" type="button">
+                    <a href="{% url 'add_single_item_from_cart' order_item.item.slug %}">
+                       <i class="lnr lnr-chevron-right"></i>
+                    </a>
+                  </button>
+             </td>
+
+                {% comment %}
+            "" You gave to use ajax our here ""
+                  <td>
+                    <div class="product_count">
+
+                      <input
+                        type="text"
+                        name="qty"
+                        id="sst"
+                        maxlength="12"
+                        value="1"
+                        title="Quantity:"
+                        class="input-text qty"/>
+                      <button
+                        onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
+                        class="increase items-count"
+                        type="button">
+                        <i class="lnr lnr-chevron-up"></i>
+                      </button>
+                      <button
+                        onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
+                        class="reduced items-count"
+                        type="button">
+                        <i class="lnr lnr-chevron-down"></i>
+                      </button>
+                    </div>
+                  </td>
+                {% endcomment %}
+
+                  <td>
+                        {% if order.item.discount_price %}
+                              <h5>${{ order_item.get_total_discount_price }}</h5>
+                        {% else %}
+                              <h5>${{ order_item.get_total_order_price }}</h5>
+                        {% endif %}
+
+                  </td>
+                </tr>
+
+              {% endfor %}
+
+
+              {% comment %}
                 <tr>
                   <td>
                     <div class="media">
@@ -137,78 +214,34 @@
                     <h5>$720.00</h5>
                   </td>
                 </tr>
-                <tr>
-                  <td>
-                    <div class="media">
-                      <div class="d-flex">
-                        <img
-                          src="img/product/single-product/cart-1.jpg"
-                          alt=""
-                        />
-                      </div>
-                      <div class="media-body">
-                        <p>Minimalistic shop for multipurpose use</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <h5>$360.00</h5>
-                  </td>
-                  <td>
-                    <div class="product_count">
-                      <input
-                        type="text"
-                        name="qty"
-                        id="sst"
-                        maxlength="12"
-                        value="1"
-                        title="Quantity:"
-                        class="input-text qty"
-                      />
-                      <button
-                        onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
-                        class="increase items-count"
-                        type="button"
-                      >
-                        <i class="lnr lnr-chevron-up"></i>
-                      </button>
-                      <button
-                        onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
-                        class="reduced items-count"
-                        type="button"
-                      >
-                        <i class="lnr lnr-chevron-down"></i>
-                      </button>
-                    </div>
-                  </td>
-                  <td>
-                    <h5>$720.00</h5>
-                  </td>
-                </tr>
+              {% endcomment %}
                 <tr class="bottom_button">
                   <td>
-                    <a class="gray_btn" href="#">Update Cart</a>
+                    <a class="gray_btn" href="#">Update Cart for ajax</a>
                   </td>
                   <td></td>
                   <td></td>
                   <td>
+                    {% comment %}
                     <div class="cupon_text">
                       <input type="text" placeholder="Coupon Code" />
                       <a class="main_btn" href="#">Apply</a>
                       <a class="gray_btn" href="#">Close Coupon</a>
                     </div>
+                    {% endcomment %}
                   </td>
                 </tr>
                 <tr>
                   <td></td>
                   <td></td>
                   <td>
-                    <h5>Subtotal</h5>
+                    <h5>Total</h5>
                   </td>
                   <td>
-                    <h5>$2160.00</h5>
+                    <h5>${{cobject.get_total_amount }}</h5>
                   </td>
                 </tr>
+              {% comment %}
                 <tr class="shipping_area">
                   <td></td>
                   <td></td>
@@ -250,13 +283,14 @@
                     </div>
                   </td>
                 </tr>
+              {% endcomment %}
                 <tr class="out_button_area">
                   <td></td>
                   <td></td>
                   <td></td>
                   <td>
                     <div class="checkout_btn_inner">
-                      <a class="gray_btn" href="#">Continue Shopping</a>
+                      <a class="gray_btn" href="{% url 'test_index' %}">Continue Shopping</a>
                       <a class="main_btn" href="#">Proceed to checkout</a>
                     </div>
                   </td>

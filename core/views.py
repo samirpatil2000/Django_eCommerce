@@ -139,10 +139,22 @@ class OrderSummaryView(LoginRequiredMixin, View):
             context = {
                 'object': order
             }
-            return render(self.request, 'core/order_summary.html', context)
+            return render(self.request, 'aws/cart.html', context)
         except ObjectDoesNotExist:
             messages.warning(self.request, "You do not have an active order")
-            return redirect('index')
+            return redirect('test_index')
+
+class TestOrderSummaryView(LoginRequiredMixin,View):
+    def get(self,*args,**kwargs):
+        try:
+            order=Order.objects.get(user=self.request.user,ordered=False)
+            context={
+                'object':order
+            }
+            return redirect(self.request,'aws/cart.html',context)
+        except ObjectDoesNotExist:
+            messages.warning(self.request, "You do not have an active order")
+            return redirect('test_index')
 
 @login_required
 def remove_single_item_from_cart(request, slug):
@@ -378,3 +390,6 @@ class PaymentView(View):
 
 def templatingTesting(request):
     return render(request,'aws/index.html',{})
+
+def contact(request):
+    return render(request,'aws/contact.html',{})
