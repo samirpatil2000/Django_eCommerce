@@ -51,9 +51,10 @@
                 <a href="{% url 'test-product-detail' i.slug %}">
                   <i class="ti-eye"></i>
                 </a>
-                <a href="#">
-                  <i class="ti-heart"></i>
+                <a href="{%  url 'remove_from_fav' i.slug %}">
+                  <i class="red">Delete</i>
                 </a>
+
                 <a href="#">
                   <i class="ti-shopping-cart"></i>
                 </a>

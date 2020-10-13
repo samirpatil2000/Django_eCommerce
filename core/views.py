@@ -428,6 +428,20 @@ def add_to_favourite(request,slug):
 
 
     return redirect('product-detail', slug=slug)
+@login_required
+def remove_from_fav(request,slug):
+    item = get_object_or_404(Item, slug=slug)
+    qs=Item.objects.filter(favourite=request.user)
+    if qs.exists():
+        item.favourite.remove(request.user)
+        messages.warning(request,f"successfully remove {item.title} ")
+        return redirect('product-detail', slug=slug)
+    else:
+        messages.info(request," You don't have this product in your cart ")
+        return redirect('product-detail', slug=slug)
+
+
+
 
 @login_required
 def yourFavListView(request):

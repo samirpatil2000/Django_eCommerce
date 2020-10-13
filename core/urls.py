@@ -25,7 +25,8 @@ urlpatterns = [
 
    # TODO  Favourite List
 
-   path('favourites/<slug>',views.add_to_favourite,name='add_to_favourite'),
+   path('add_to_favourite/<slug>',views.add_to_favourite,name='add_to_favourite'),
+   path('remove_from_fav/<slug>',views.remove_from_fav,name='remove_from_fav'),
    path('favList/',views.yourFavListView,name='FavList')
   # path('favList/',FavListView.as_view(),name='FavList')
 
