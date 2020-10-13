@@ -6,9 +6,9 @@ from django.shortcuts import render,reverse
 from django_countries.fields import CountryField
 
 CATEGORY_CHOICES=(
-    ('S', 'Shirt'),
-    ('SW', 'Sport wear'),
-    ('OW', 'Outwear')
+    ('S', 'MAC'),
+    ('SW', 'MAC PRO'),
+    ('OW', 'IPHONE')
 )
 LABEL_CHOICES = (
     ('P', 'primary'),
@@ -62,6 +62,8 @@ class Item(models.Model):
 
     slug=models.SlugField()
     desc=models.TextField(default="THis is desc ",max_length=500)
+    favourite=models.ManyToManyField(settings.AUTH_USER_MODEL,
+                                     blank=True,null=True)
     # quantity=models.IntegerField(default=1)
 
 
@@ -76,6 +78,9 @@ class Item(models.Model):
     #
     def get_remove_from_cart_url(self):
         return reverse('remove_from_cart',kwargs={'slug':self.slug})
+
+    def get_add_to_favourites_url(self):
+        return reverse('add_to_favourite',kwargs={'slug':self.slug})
 
 
 
@@ -123,4 +128,12 @@ class Order(models.Model):
             total+=i.get_final_price()
         return total
 
+
+class FavouriteList(models.Model):
+    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    item_name=models.ManyToManyField(Item)
+
+
+    def __str__(self):
+        return f'{self.user.username}'
 

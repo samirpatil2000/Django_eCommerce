@@ -125,6 +125,10 @@
               </p>
               <div class="product_count">
                 <label for="qty">Quantity:</label>
+                {% comment %}
+
+                Use Ajax Over here
+
                 <input
                   type="text"
                   name="qty"
@@ -148,16 +152,17 @@
                 >
                   <i class="lnr lnr-chevron-down"></i>
                 </button>
+                {% endcomment %}
               </div>
               <div class="card_area">
                 <a class="main_btn" href="{{ object.get_add_to_cart_url }}">Add to Cart</a>
-                <a class="main_btn" href="#">Remove From Cart</a>
+                <a class="main_btn" href="{{ object.get_remove_from_cart_url }}">Remove From Cart</a>
                {% comment %}
                 <a class="icon_btn" href="#">
                   <i class="lnr lnr lnr-diamond"></i>
                 </a>
                 {% endcomment %}
-                <a class="icon_btn" href="#">
+                <a class="icon_btn" href="{%  url 'add_to_favourite' slug=object.slug %}">
                   <i class="lnr lnr lnr-heart"></i>
                 </a>
               </div>

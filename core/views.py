@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render,get_object_or_404,redirect,reverse
 from django.views.generic.base import View
 
-from.models import Item,OrderItem,Order,BillingAddress,Payment
+from.models import Item,OrderItem,Order,BillingAddress,Payment,FavouriteList
 from django.views.generic import ListView,DetailView
 from django.utils import timezone
 
@@ -81,11 +81,11 @@ def add_to_cart(request, slug):
             order_item.quantity += 1
             order_item.save()
             messages.info(request,'{} added to your cart'.format(item))
-            return redirect("test_index")
+            return redirect("product-detail",slug=slug)
         else:
             order.items.add(order_item)
             messages.info(request, ' {} added to your cart'.format(item))
-            return redirect("test_index")
+            return redirect("product-detail",slug=slug)
     else:
         ordered_date = timezone.now()
         # order=OrderItem()
@@ -103,7 +103,7 @@ def add_to_cart(request, slug):
             user=request.user, ordered_date=ordered_date)
         order.items.add(order_item)
         messages.info(request, "{} is added to your cart.".format(item))
-        return redirect("test_index")
+        return redirect("product-detail",slug=slug)
 
 @login_required
 def remove_from_cart(request, slug):
@@ -286,7 +286,7 @@ class CheckoutView(View):
 
 
                 if payment_option == 'S':
-                    return redirect('payment', payment_option='Stripe')
+                    return redirect('payment', payment_option='Stripe')   # TODO: here in redirect payment_option is  similiar to slug field
                 elif payment_option == 'P':
                     return redirect('payment', payment_option='PayTm')
                 elif payment_option =='GP':
@@ -393,3 +393,71 @@ def templatingTesting(request):
 
 def contact(request):
     return render(request,'aws/contact.html',{})
+
+
+@login_required
+def add_to_favourite(request,slug):
+    item = get_object_or_404(Item, slug=slug)
+
+    qs=Item.objects.filter(favourite=request.user)
+    if qs.exists():
+        messages.warning(request," You already added it ")
+        return redirect('product-detail', slug=slug)
+    else:
+        item.favourite.add(request.user)
+        messages.info(request," Product is added to favourite ")
+
+    # return redirect('product-detail',slug=slug)
+
+
+
+    """if qs.exists():
+        messages.warning(request,"YOU already added it to the list ")
+        return redirect('product-detail', slug=slug)
+
+    else:
+        items=Item.objects.filter(slug=slug)
+        fav_item=FavouriteList.objects.create(user=request.user)
+        fav_item.item_name.add(items)
+
+        # favourite_item.item_name.set(items)
+
+        "" set method id user because of create method is not use for MANYTOMANY Field ""
+
+        # favourite_item.save()"""
+
+
+    return redirect('product-detail', slug=slug)
+
+@login_required
+def yourFavListView(request):
+    #favList=FavouriteList.objects.filter(user=request.user)
+    favList=Item.objects.filter(favourite=request.user)
+    context={
+        'object_list':favList,
+    }
+    return render(request,'aws/indexFav.html',context)
+
+
+"""class FavListView(LoginRequiredMixin,View):
+    # model = FavouriteList
+    template_name = 'core/index.html'
+    # context_object_name = 'object_list'
+    def get_context_data(self, **kwargs):
+        context=super().get_context_data(**kwargs)
+        context={
+            'object_list':FavouriteList.objects.get(user=self.request.user)
+
+        }
+        return redirect(self.request,self.template_name,context)
+    def get(self, *args, **kwargs):
+        try:
+            order = FavouriteList.objects.get(user=self.request.user)
+            context = {
+                'object': order
+            }
+            return render(self.request, self.template_name, context)
+        except ObjectDoesNotExist:
+            messages.warning(self.request, "You do not have an active order")
+            return redirect('test_index')
+"""

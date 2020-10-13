@@ -39,6 +39,7 @@
                   <th scope="col">Price</th>
                   <th scope="col">Quantity</th>
                   <th scope="col">Total</th>
+                  <th scope="col">Delete</th>
                 </tr>
               </thead>
               <tbody>
@@ -111,6 +112,9 @@
                               <h5>${{ order_item.get_total_order_price }}</h5>
                         {% endif %}
 
+                  </td>
+                  <td>
+                    <a style='color: red;' href="{% url 'remove_from_cart' order_item.item.slug %}">Delete</a>
                   </td>
                 </tr>
 
@@ -230,6 +234,7 @@
                     </div>
                     {% endcomment %}
                   </td>
+                  <td></td>
                 </tr>
                 <tr>
                   <td></td>
@@ -238,8 +243,9 @@
                     <h5>Total</h5>
                   </td>
                   <td>
-                    <h5>${{cobject.get_total_amount }}</h5>
+                    <h5>${{ object.get_total_amount }}</h5>
                   </td>
+                  <td></td>
                 </tr>
               {% comment %}
                 <tr class="shipping_area">
@@ -294,6 +300,7 @@
                       <a class="main_btn" href="#">Proceed to checkout</a>
                     </div>
                   </td>
+                  <td></td>
                 </tr>
               </tbody>
             </table>
