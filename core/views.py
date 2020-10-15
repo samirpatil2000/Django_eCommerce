@@ -475,3 +475,11 @@ def yourFavListView(request):
             messages.warning(self.request, "You do not have an active order")
             return redirect('test_index')
 """
+
+def shopCategory(request):
+    template_name='aws/category.html'
+
+    context={
+
+    }
+    return render(request,template_name,context)

@@ -1,3 +1,5 @@
+import random
+
 from django.db import models
 from django.conf import settings
 from django.shortcuts import render,reverse
@@ -15,6 +17,34 @@ LABEL_CHOICES = (
     ('S', 'secondary'),
     ('D', 'danger')
 )
+
+def default_cat():
+    cat_list=['Android','iPhone','Blackberry','Laptops','Mac','Windows','CromeBook']
+    n=random.randrange(0,len(cat_list))
+    return cat_list[n]
+
+def default_brand():
+    brand_list=['Apple','Samsung','Lenovo','Xiaomi','MotoRolla','Google Pixels','Boat','Beat','Asus','HP']
+    n=random.randrange(0,len(brand_list))
+    return brand_list[n]
+
+
+class Category(models.Model):
+    name=models.CharField(max_length=100,default=default_cat,unique=True)
+    def __str__(self):
+        return self.name
+
+class SubCategory(models.Model):
+    name=models.CharField(max_length=100,unique=True,default='subcat')
+    category=models.ManyToManyField(Category)
+    def __str__(self):
+        return self.name
+
+class Brand(models.Model):
+    name=models.CharField(max_length=100,default=default_brand,unique=True)
+    def __str__(self):
+        return self.name
+
 
 
 class BillingAddress(models.Model):
@@ -46,8 +76,6 @@ class Payment(models.Model):
 
 
 
-
-
 class Item(models.Model):
     title=models.CharField(max_length=100)
     price=models.IntegerField()
@@ -60,7 +88,13 @@ class Item(models.Model):
 
     """  In template you have to use {{ i.get_label_display }}  ==> primary  If   {{ i.label }} ===> P """
 
-    slug=models.SlugField()
+    slug=models.SlugField(unique=True)
+
+    category1=models.ForeignKey(Category,on_delete=models.CASCADE,blank=True,null=True)
+    brand1=models.ForeignKey(Brand,on_delete=models.CASCADE,blank=True,null=True)
+    subcategory=models.ForeignKey(SubCategory,on_delete=models.CASCADE,blank=True,null=True)
+
+
     desc=models.TextField(default="THis is desc ",max_length=500)
     favourite=models.ManyToManyField(settings.AUTH_USER_MODEL,
                                      blank=True,null=True)

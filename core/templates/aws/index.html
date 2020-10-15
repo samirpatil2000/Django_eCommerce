@@ -363,7 +363,7 @@
         <div class="col-lg-3 col-md-6">
           <div class="single-product">
             <div class="product-img">
-              <img class="img-fluid w-100" src="{% static 'aws/img/product/inspired-product/i1.jpg' %}" alt="" />
+              <img class="img-fluid w-100" src="{% static 'aws/img/product/inspired-product/i3.jpg' %}" alt="" />
               <div class="p_icon">
                 <a href="{% url 'test-product-detail' i.slug %}">
                   <i class="ti-eye"></i>
@@ -371,7 +371,7 @@
                 <a href="{%  url 'add_to_favourite' i.slug %}">
                   <i class="ti-heart"></i>
                 </a>
-                <a href="#">
+                <a href="{% url 'add_to_cart' i.slug %}">
                   <i class="ti-shopping-cart"></i>
                 </a>
               </div>

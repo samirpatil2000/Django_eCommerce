@@ -1,5 +1,5 @@
 {% extends 'aws/base.html' %}
-
+{% load static %}
 {% block body %}
 
   <body>
@@ -54,7 +54,7 @@
                     <div class="product-img">
                       <img
                         class="card-img"
-                        src="img/product/inspired-product/i1.jpg"
+                        src="{% static 'aws/img/product/inspired-product/i1.jpg' %}"
                         alt=""
                       />
                       <div class="p_icon">
@@ -86,7 +86,7 @@
                     <div class="product-img">
                       <img
                         class="card-img"
-                        src="img/product/inspired-product/i2.jpg"
+                        src="{% static 'aws/img/product/inspired-product/i2.jpg' %}"
                         alt=""
                       />
                       <div class="p_icon">
@@ -118,7 +118,7 @@
                     <div class="product-img">
                       <img
                         class="card-img"
-                        src="img/product/inspired-product/i3.jpg"
+                        src="{% static 'aws/img/product/inspired-product/i3.jpg' %}"
                         alt=""
                       />
                       <div class="p_icon">
@@ -150,7 +150,7 @@
                     <div class="product-img">
                       <img
                         class="card-img"
-                        src="img/product/inspired-product/i4.jpg"
+                        src="{% static 'aws/img/product/inspired-product/i4.jpg' %}"
                         alt=""
                       />
                       <div class="p_icon">
@@ -372,6 +372,7 @@
                   </ul>
                 </div>
               </aside>
+              {% comment %}
 
               <aside class="left_widgets p_filter_widgets">
                 <div class="l_w_title">
@@ -437,6 +438,8 @@
                   </div>
                 </div>
               </aside>
+
+               {% endcomment %}
             </div>
           </div>
         </div>
