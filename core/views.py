@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render,get_object_or_404,redirect,reverse
 from django.views.generic.base import View
 
-from.models import Item,OrderItem,Order,BillingAddress,Payment,FavouriteList
+from.models import Item,OrderItem,Order,BillingAddress,Payment,FavouriteList,Category,SubCategory,Brand
 from django.views.generic import ListView,DetailView
 from django.utils import timezone
 
@@ -476,10 +476,36 @@ def yourFavListView(request):
             return redirect('test_index')
 """
 
+
+def is_valid_name(para):
+    return para!='' and para is not None
 def shopCategory(request):
     template_name='aws/category.html'
 
-    context={
+    obj=Item.objects.all()
 
+    cat=Category.objects.all()
+    brand=Brand.objects.all()
+    subCat=SubCategory.objects.all()
+
+    category_name=request.GET.get('category')
+    sub_category_name=request.GET.get('subcategory')
+    brand_name=request.GET.get('brand')
+
+    if is_valid_name(category_name) and category_name != 'Category':
+        obj=obj.filter(category__name=category_name)
+
+    if is_valid_name(brand_name) and brand_name != 'Brand':
+        obj=obj.filter(brand__name=brand_name)
+
+    if is_valid_name(sub_category_name) and sub_category_name !='SubCategory':
+        obj=obj.filter(subcategory__name=sub_category_name)
+
+
+    context={
+        'object':obj,
+        'categories':cat,
+        'subcategories':subCat,
+        'brands':brand,
     }
     return render(request,template_name,context)

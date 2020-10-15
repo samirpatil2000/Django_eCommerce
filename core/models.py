@@ -18,15 +18,27 @@ LABEL_CHOICES = (
     ('D', 'danger')
 )
 
+productName=['iPhone 5s','iPhone 6s','iPhone Se','MacBook Air','MacBook Pro',
+             'Sumsung Galaxy J7','Sumsung Galaxy J5','Sumsung Galaxy J2','Sumsung Galaxy J1 ace','LG mobile',
+             'Asus Rog','Asus L3T01','Blackberry T9','Hp envy','Hp envy T56']
+def default_product_name():
+    n=random.randrange(0,len(productName))
+    return productName[n]
+
 def default_cat():
-    cat_list=['Android','iPhone','Blackberry','Laptops','Mac','Windows','CromeBook']
+    cat_list=['Mobile','Laptops','Tv','Headphone','Earphone','Watch']
     n=random.randrange(0,len(cat_list))
     return cat_list[n]
 
 def default_brand():
-    brand_list=['Apple','Samsung','Lenovo','Xiaomi','MotoRolla','Google Pixels','Boat','Beat','Asus','HP']
+    brand_list=['Apple','Samsung','Lenovo','Xiaomi','MotoRolla','Google Pixels','Boat','Beat','Asus','HP','Tagg']
     n=random.randrange(0,len(brand_list))
     return brand_list[n]
+
+def default_sub_cat():
+    sub_cat_list=['Android','iPhone','Windows','Windows 7','Windows 8','Window 10','Window 10 lean','CromeBook','Smart Watch']
+    n=random.randrange(0,len(sub_cat_list))
+    return sub_cat_list[n]
 
 
 class Category(models.Model):
@@ -35,7 +47,7 @@ class Category(models.Model):
         return self.name
 
 class SubCategory(models.Model):
-    name=models.CharField(max_length=100,unique=True,default='subcat')
+    name=models.CharField(max_length=100,unique=True,default=default_sub_cat)
     category=models.ManyToManyField(Category)
     def __str__(self):
         return self.name
@@ -77,21 +89,24 @@ class Payment(models.Model):
 
 
 class Item(models.Model):
-    title=models.CharField(max_length=100)
-    price=models.IntegerField()
+    title=models.CharField(max_length=100,default=default_product_name)
+    price=models.IntegerField(default=random.randrange(15000,50000,1000))
     discount_price=models.IntegerField(blank=True,null=True)
-    category=models.CharField(choices=CATEGORY_CHOICES,max_length=2 ,null=True,blank=True)
+
+
+    # TODO with choice field
+    #category=models.CharField(choices=CATEGORY_CHOICES,max_length=2 ,null=True,blank=True)
 
     """  In template you have to use {{ i.get_category_display }}  ==> Shirt  If   {{ i.category }} ===> S """
 
-    label=models.CharField(choices=LABEL_CHOICES,default='P',max_length=1,null=True,blank=True)
+    #label=models.CharField(choices=LABEL_CHOICES,default='P',max_length=1,null=True,blank=True)
 
     """  In template you have to use {{ i.get_label_display }}  ==> primary  If   {{ i.label }} ===> P """
 
     slug=models.SlugField(unique=True)
 
-    category1=models.ForeignKey(Category,on_delete=models.CASCADE,blank=True,null=True)
-    brand1=models.ForeignKey(Brand,on_delete=models.CASCADE,blank=True,null=True)
+    category=models.ForeignKey(Category,on_delete=models.CASCADE,blank=True,null=True)
+    brand=models.ForeignKey(Brand,on_delete=models.CASCADE,blank=True,null=True)
     subcategory=models.ForeignKey(SubCategory,on_delete=models.CASCADE,blank=True,null=True)
 
 
@@ -170,4 +185,3 @@ class FavouriteList(models.Model):
 
     def __str__(self):
         return f'{self.user.username}'
-
