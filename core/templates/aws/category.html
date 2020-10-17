@@ -17,9 +17,9 @@
               <p>Very us move be blessed multiply night</p>
             </div>
             <div class="page_link">
-              <a href="index.html">Home</a>
-              <a href="category.html">Shop</a>
-              <a href="category.html">Women Fashion</a>
+              <a href="">Home</a>
+              <a href="">Shop</a>
+              <a href="">Women Fashion</a>
             </div>
           </div>
         </div>
@@ -58,9 +58,19 @@
 
                   </div>
 
-                  <button type="submit" class="btn btn-default">Search</button>
+                  <button type="submit" class="btn btn-default">Sort</button>
+                  <button class="btn btn-default">{{ count }}</button>
                 </div>
               </form>
+            <form method="GET" action=".">
+               <div class="product_top_bar">
+                  <div class="left_dorp">
+
+                  </div>
+
+                  <button type="submit" class="btn btn-default">Search</button>
+              </div>
+          </form>
             
             <div class="latest_product_inner">
               <div class="row">
@@ -396,6 +406,7 @@
                   </ul>
                 </div>
               </aside>
+
               {% comment %}
 
               <aside class="left_widgets p_filter_widgets">
@@ -463,7 +474,8 @@
                 </div>
               </aside>
 
-               {% endcomment %}
+              {% endcomment %}
+
             </div>
           </div>
         </div>

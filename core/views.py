@@ -37,9 +37,9 @@ def product(request):
 
 class HomeView(ListView):
     model=Item
-    template_name ='core/home-page.html'
+    template_name ='aws/index.html'
     context_object_name = 'object_list'
-    paginate_by = 3
+    paginate_by = 4
 
 """the context in this case is change now it is not items any more now it is object_list"""
 
@@ -47,6 +47,7 @@ class TestIndex(ListView):
     model = Item
     template_name = 'aws/index.html'
     context_object_name = 'object_list'
+    paginate_by = 4
 
 
 class ItemDetailView(DetailView):
@@ -235,7 +236,7 @@ def add_single_item_from_cart(request, slug):
         messages.warning(request, "{} was added from your cart.".format(item))
         return redirect("order_summary")
 
-class CheckoutView(View):
+class CheckoutView(LoginRequiredMixin,View):
     def get(self,*args,**kwargs):
         form=CheckoutForm()
         order=Order.objects.get(user=self.request.user,ordered=False)
@@ -244,7 +245,7 @@ class CheckoutView(View):
             'order':order,
             'form':form
         }
-        return render(self.request,'core/checkout-page.html',context)
+        return render(self.request,'aws/checkout.html',context)
 
     def post(self,*args,**kwargs):
         form=CheckoutForm(self.request.POST or None)
@@ -264,7 +265,6 @@ class CheckoutView(View):
 
                 """ if user select the payment option then we will redirect it to that specific payment option)"""
                 payment_option = form.cleaned_data.get('payment_option')
-
 
                 """ here we are taking input from user and save this into the billing address model """
 
@@ -294,7 +294,7 @@ class CheckoutView(View):
                 else:
                     messages.warning(
                         self.request, "Invalid payment option selected")
-                    return redirect('checkout')
+                    return redirect('checkouts')
         except ObjectDoesNotExist:
             messages.warning(self.request," User doesn't have any address ")
             return redirect('order_summary')
@@ -395,6 +395,8 @@ def contact(request):
     return render(request,'aws/contact.html',{})
 
 
+# TODO add to favourite is done using model field not by Different Model
+
 @login_required
 def add_to_favourite(request,slug):
     item = get_object_or_404(Item, slug=slug)
@@ -483,6 +485,8 @@ def shopCategory(request):
     template_name='aws/category.html'
 
     obj=Item.objects.all()
+    counter=Item.objects.all().count()
+
 
     cat=Category.objects.all()
     brand=Brand.objects.all()
@@ -494,18 +498,34 @@ def shopCategory(request):
 
     if is_valid_name(category_name) and category_name != 'Category':
         obj=obj.filter(category__name=category_name)
+        counter=obj.filter(category__name=category_name).count()
+
 
     if is_valid_name(brand_name) and brand_name != 'Brand':
         obj=obj.filter(brand__name=brand_name)
+        counter=obj.filter(brand__name=brand_name).count()
 
     if is_valid_name(sub_category_name) and sub_category_name !='SubCategory':
         obj=obj.filter(subcategory__name=sub_category_name)
+        counter=obj.filter(subcategory__name=sub_category_name).count()
+
 
 
     context={
+        'count':counter,
         'object':obj,
         'categories':cat,
         'subcategories':subCat,
         'brands':brand,
     }
     return render(request,template_name,context)
+
+# @login_required
+# def checkout_test(request):
+#     orders=Order.objects.get(user=request.user,ordered=False)
+#     context={
+#         'order':orders,
+#     }
+#     if request.method == 'POST':
+#
+#     return render(request,'aws/checkout.html',context)

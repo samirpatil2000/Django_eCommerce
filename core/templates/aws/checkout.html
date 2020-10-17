@@ -1,4 +1,5 @@
 {% extends 'aws/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block body %}
 
@@ -103,6 +104,13 @@
           <div class="row">
             <div class="col-lg-8">
               <h3>Billing Details</h3>
+              {% comment %}
+              <form method="POST">
+              {% csrf_token %}
+              {{ form | crispy }}
+              <button class="btn btn-primary" type="submit">Checkout</button>
+              </form>
+              {% endcomment %}
               <form
                 class="row contact_form"
                 action="#"
@@ -163,31 +171,17 @@
                   ></span>
                 </div>
                 <div class="col-md-12 form-group p_star">
-                  <select class="country_select">
-                    <option value="1">Country</option>
-                    <option value="2">Country</option>
-                    <option value="4">Country</option>
-                  </select>
+                  {{ form.country | as_crispy_field }}
                 </div>
-                <div class="col-md-12 form-group p_star">
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="add1"
-                    name="add1"
-                  />
+                <div class="col-md-12 form-group">
+                  {{ form.shipping_address | as_crispy_field }}
                   <span
                     class="placeholder"
                     data-placeholder="Address line 01"
                   ></span>
                 </div>
-                <div class="col-md-12 form-group p_star">
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="add2"
-                    name="add2"
-                  />
+                <div class="col-md-12 form-group">
+                  {{ form.home_address | as_crispy_field }}
                   <span
                     class="placeholder"
                     data-placeholder="Address line 02"
@@ -210,13 +204,7 @@
                   </select>
                 </div>
                 <div class="col-md-12 form-group">
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="zip"
-                    name="zip"
-                    placeholder="Postcode/ZIP"
-                  />
+                  {{ form.zip | as_crispy_field }}
                 </div>
                 <div class="col-md-12 form-group">
                   <div class="creat_account">
@@ -238,6 +226,8 @@
                     placeholder="Order Notes"
                   ></textarea>
                 </div>
+
+                <button class="btn btn-primary" type="submit">Checkout</button>
               </form>
             </div>
             <div class="col-lg-4">
@@ -245,50 +235,33 @@
                 <h2>Your Order</h2>
                 <ul class="list">
                   <li>
-                    <a href="#"
-                      >Product
-                      <span>Total</span>
-                    </a>
+                    <a href="#">Product<span>Total</span></a>
                   </li>
+                  {% for obj in order.items.all %}
                   <li>
-                    <a href="#"
-                      >Fresh Blackberry
-                      <span class="middle">x 02</span>
-                      <span class="last">$720.00</span>
+                    <a href="#">{{ obj.item.title }}
+                      <span class="middle">x 0{{ obj.quantity }}</span>
+                      <span class="last">{{ obj.get_final_price }}</span>
                     </a>
                   </li>
-                  <li>
-                    <a href="#"
-                      >Fresh Tomatoes
-                      <span class="middle">x 02</span>
-                      <span class="last">$720.00</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#"
-                      >Fresh Brocoli
-                      <span class="middle">x 02</span>
-                      <span class="last">$720.00</span>
-                    </a>
-                  </li>
+                  {% endfor %}
                 </ul>
                 <ul class="list list_2">
+                  {% comment %}
                   <li>
-                    <a href="#"
-                      >Subtotal
-                      <span>$2160.00</span>
+                    <a href="#">Subtotal
+                      <span>$00</span>
                     </a>
                   </li>
                   <li>
-                    <a href="#"
-                      >Shipping
-                      <span>Flat rate: $50.00</span>
+                    <a href="#">Shipping
+                      <span>Flat rate: $0.0</span>
                     </a>
                   </li>
+                  {% endcomment %}
                   <li>
-                    <a href="#"
-                      >Total
-                      <span>$2210.00</span>
+                    <a href="#">Total
+                      <span>{{ order.get_total_amount }}</span>
                     </a>
                   </li>
                 </ul>

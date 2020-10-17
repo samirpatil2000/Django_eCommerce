@@ -31,4 +31,6 @@ urlpatterns = [
   # path('favList/',FavListView.as_view(),name='FavList')
    path('shop-category/',views.shopCategory,name='shop-category'),
 
+   # path('checkout_test/',views.checkout_test,name='checkpot-test')
+
 ]
