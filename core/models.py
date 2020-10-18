@@ -1,3 +1,5 @@
+import random
+
 from django.db import models
 from django.conf import settings
 from django.shortcuts import render,reverse
@@ -6,15 +8,55 @@ from django.shortcuts import render,reverse
 from django_countries.fields import CountryField
 
 CATEGORY_CHOICES=(
-    ('S', 'Shirt'),
-    ('SW', 'Sport wear'),
-    ('OW', 'Outwear')
+    ('S', 'MAC'),
+    ('SW', 'MAC PRO'),
+    ('OW', 'IPHONE')
 )
 LABEL_CHOICES = (
     ('P', 'primary'),
     ('S', 'secondary'),
     ('D', 'danger')
 )
+
+productName=['iPhone 5s','iPhone 6s','iPhone Se','MacBook Air','MacBook Pro',
+             'Sumsung Galaxy J7','Sumsung Galaxy J5','Sumsung Galaxy J2','Sumsung Galaxy J1 ace','LG mobile',
+             'Asus Rog','Asus L3T01','Blackberry T9','Hp envy','Hp envy T56']
+def default_product_name():
+    n=random.randrange(0,len(productName))
+    return productName[n]
+
+def default_cat():
+    cat_list=['Mobile','Laptops','Tv','Headphone','Earphone','Watch']
+    n=random.randrange(0,len(cat_list))
+    return cat_list[n]
+
+def default_brand():
+    brand_list=['Apple','Samsung','Lenovo','Xiaomi','MotoRolla','Google Pixels','Boat','Beat','Asus','HP','Tagg']
+    n=random.randrange(0,len(brand_list))
+    return brand_list[n]
+
+def default_sub_cat():
+    sub_cat_list=['Android','iPhone','Windows','Windows 7','Windows 8','Window 10','Window 10 lean','CromeBook','Smart Watch']
+    n=random.randrange(0,len(sub_cat_list))
+    return sub_cat_list[n]
+
+
+class Category(models.Model):
+    name=models.CharField(max_length=100,default=default_cat,unique=True)
+    def __str__(self):
+        return self.name
+
+class SubCategory(models.Model):
+    name=models.CharField(max_length=100,unique=True,default=default_sub_cat)
+    category=models.ManyToManyField(Category)
+    def __str__(self):
+        return self.name
+
+class Brand(models.Model):
+    name=models.CharField(max_length=100,default=default_brand,unique=True)
+    def __str__(self):
+        return self.name
+
 
 
 class BillingAddress(models.Model):
@@ -46,22 +88,31 @@ class Payment(models.Model):
 
 
 
-
-
 class Item(models.Model):
-    title=models.CharField(max_length=100)
-    price=models.IntegerField()
+    title=models.CharField(max_length=100,default=default_product_name)
+    price=models.IntegerField(default=random.randrange(15000,50000,1000))
     discount_price=models.IntegerField(blank=True,null=True)
-    category=models.CharField(choices=CATEGORY_CHOICES,max_length=2 ,null=True,blank=True)
+
+
+    # TODO with choice field
+    #category=models.CharField(choices=CATEGORY_CHOICES,max_length=2 ,null=True,blank=True)
 
     """  In template you have to use {{ i.get_category_display }}  ==> Shirt  If   {{ i.category }} ===> S """
 
-    label=models.CharField(choices=LABEL_CHOICES,default='P',max_length=1,null=True,blank=True)
+    #label=models.CharField(choices=LABEL_CHOICES,default='P',max_length=1,null=True,blank=True)
 
     """  In template you have to use {{ i.get_label_display }}  ==> primary  If   {{ i.label }} ===> P """
 
-    slug=models.SlugField()
+    slug=models.SlugField(unique=True)
+
+    category=models.ForeignKey(Category,on_delete=models.CASCADE,blank=True,null=True)
+    brand=models.ForeignKey(Brand,on_delete=models.CASCADE,blank=True,null=True)
+    subcategory=models.ForeignKey(SubCategory,on_delete=models.CASCADE,blank=True,null=True)
+
+
     desc=models.TextField(default="THis is desc ",max_length=500)
+    favourite=models.ManyToManyField(settings.AUTH_USER_MODEL,
+                                     blank=True,null=True)
     # quantity=models.IntegerField(default=1)
 
 
@@ -76,6 +127,9 @@ class Item(models.Model):
     #
     def get_remove_from_cart_url(self):
         return reverse('remove_from_cart',kwargs={'slug':self.slug})
+
+    def get_add_to_favourites_url(self):
+        return reverse('add_to_favourite',kwargs={'slug':self.slug})
 
 
 
@@ -124,3 +178,16 @@ class Order(models.Model):
         return total
 
 
+class FavouriteList(models.Model):
+    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    item_name=models.ManyToManyField(Item)
+
+
+    def __str__(self):
+        return f'{self.user.username}'
+
+class ProductViewByUser(models.Model):
+    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    product=models.ForeignKey(Item,on_delete=models.CASCADE)
+    def __str__(self):
+        return f'{self.user} - {self.product}'

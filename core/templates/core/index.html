@@ -6,9 +6,11 @@
 </head>
 <body>
 
-<h1> The Product List </h1>
-{% for i in items %}
-<h3>{{ i }}</h3>
+<h1> The Favourite List </h1>
+{% for i in object_list %}
+
+<h4> <h5>{{forloop.counter}} .</h5> {{ i.user.username }}</h4>
+<h4>{{ i.product.title }}</h4>
 {% endfor %}
 
 </body>

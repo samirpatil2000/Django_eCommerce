@@ -4,10 +4,11 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render,get_object_or_404,redirect,reverse
 from django.views.generic.base import View
 
-from.models import Item,OrderItem,Order,BillingAddress,Payment
+from.models import Item,OrderItem,Order,BillingAddress,Payment,FavouriteList,Category,SubCategory,Brand,ProductViewByUser
 from django.views.generic import ListView,DetailView
 from django.utils import timezone
 
@@ -37,17 +38,77 @@ def product(request):
 
 class HomeView(ListView):
     model=Item
-    template_name ='core/home-page.html'
+    template_name ='aws/index.html'
     context_object_name = 'object_list'
-    paginate_by = 3
+    paginate_by = 4
 
 """the context in this case is change now it is not items any more now it is object_list"""
+
+
+def home_view(request):
+    feature_product=Item.objects.all()[0:3]
+
+    #TODO add hre history of user
+
+    inspire_history_product=Item.objects.all()
+    template_name ='aws/index.html'
+
+    history_items=ProductViewByUser.objects.filter(user=request.user)
+
+
+    # Create a paginator to split your products queryset
+    paginator = Paginator(inspire_history_product, 1)  # Show 25 contacts per page
+    # Get the current page number
+    page = request.GET.get('page')
+    # Get the current slice (page) of products
+    inspire_history_product_paginator = paginator.get_page(page)
+    try:
+        paginated_queryset=paginator.page(page)
+    except PageNotAnInteger:
+        paginated_queryset=paginator.page(1)
+    except EmptyPage: # showing last page
+        paginated_queryset=paginator.page(paginator.num_pages)
+
+    context={
+        'queryset': paginated_queryset,
+        'feature_product':feature_product,
+        'inspire_product':inspire_history_product_paginator,
+        'history':history_items,
+    }
+    return render(request,template_name,context)
 
 
 class ItemDetailView(DetailView):
     model = Item
     template_name = 'core/product-page.html'
     context_object_name = 'object'
+
+
+class TestItemDetailView(DetailView):
+    model = Item
+    template_name = 'aws/single-product.html'
+    context_object_name = 'object'
+
+    def get(self, request, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            product = self.kwargs['slug']
+            product_id=product.pk
+            ProductViewByUser.objects.get_or_create(user=request.user,product=product_id)
+
+def product_detail_view(request,slug):
+    item = get_object_or_404(Item, slug=slug)
+    template_name = 'aws/single-product.html'
+
+    if request.user.is_authenticated:
+        ProductViewByUser.objects.get_or_create(user=request.user,product=item)
+
+    context={
+        'object':item
+    }
+    return render(request,template_name,context)
+
+
+
 
 @login_required
 def add_to_cart(request, slug):
@@ -70,11 +131,11 @@ def add_to_cart(request, slug):
             order_item.quantity += 1
             order_item.save()
             messages.info(request,'{} added to your cart'.format(item))
-            return redirect("order_summary")
+            return redirect("product-detail",slug=slug)
         else:
             order.items.add(order_item)
             messages.info(request, ' {} added to your cart'.format(item))
-            return redirect("order_summary")
+            return redirect("product-detail",slug=slug)
     else:
         ordered_date = timezone.now()
         # order=OrderItem()
@@ -128,10 +189,22 @@ class OrderSummaryView(LoginRequiredMixin, View):
             context = {
                 'object': order
             }
-            return render(self.request, 'core/order_summary.html', context)
+            return render(self.request, 'aws/cart.html', context)
         except ObjectDoesNotExist:
             messages.warning(self.request, "You do not have an active order")
-            return redirect('index')
+            return redirect('test_index')
+
+class TestOrderSummaryView(LoginRequiredMixin,View):
+    def get(self,*args,**kwargs):
+        try:
+            order=Order.objects.get(user=self.request.user,ordered=False)
+            context={
+                'object':order
+            }
+            return redirect(self.request,'aws/cart.html',context)
+        except ObjectDoesNotExist:
+            messages.warning(self.request, "You do not have an active order")
+            return redirect('test_index')
 
 @login_required
 def remove_single_item_from_cart(request, slug):
@@ -212,7 +285,7 @@ def add_single_item_from_cart(request, slug):
         messages.warning(request, "{} was added from your cart.".format(item))
         return redirect("order_summary")
 
-class CheckoutView(View):
+class CheckoutView(LoginRequiredMixin,View):
     def get(self,*args,**kwargs):
         form=CheckoutForm()
         order=Order.objects.get(user=self.request.user,ordered=False)
@@ -221,7 +294,7 @@ class CheckoutView(View):
             'order':order,
             'form':form
         }
-        return render(self.request,'core/checkout-page.html',context)
+        return render(self.request,'aws/checkout.html',context)
 
     def post(self,*args,**kwargs):
         form=CheckoutForm(self.request.POST or None)
@@ -241,7 +314,6 @@ class CheckoutView(View):
 
                 """ if user select the payment option then we will redirect it to that specific payment option)"""
                 payment_option = form.cleaned_data.get('payment_option')
-
 
                 """ here we are taking input from user and save this into the billing address model """
 
@@ -263,7 +335,7 @@ class CheckoutView(View):
 
 
                 if payment_option == 'S':
-                    return redirect('payment', payment_option='Stripe')
+                    return redirect('payment', payment_option='Stripe')   # TODO: here in redirect payment_option is  similiar to slug field
                 elif payment_option == 'P':
                     return redirect('payment', payment_option='PayTm')
                 elif payment_option =='GP':
@@ -271,7 +343,7 @@ class CheckoutView(View):
                 else:
                     messages.warning(
                         self.request, "Invalid payment option selected")
-                    return redirect('checkout')
+                    return redirect('checkouts')
         except ObjectDoesNotExist:
             messages.warning(self.request," User doesn't have any address ")
             return redirect('order_summary')
@@ -365,3 +437,142 @@ class PaymentView(View):
         messages.warning(self.request, "Invalid data received")
         return redirect("/payment/stripe/")
 
+def templatingTesting(request):
+    return render(request,'aws/index.html',{})
+
+def contact(request):
+    return render(request,'aws/contact.html',{})
+
+
+# TODO add to favourite is done using model field not by Different Model
+
+@login_required
+def add_to_favourite(request,slug):
+    item = get_object_or_404(Item, slug=slug)
+
+    qs=Item.objects.filter(favourite=request.user)
+    if qs.exists():
+        messages.warning(request," You already added it ")
+        return redirect('product-detail', slug=slug)
+    else:
+        item.favourite.add(request.user)
+        messages.info(request," Product is added to favourite ")
+
+    # return redirect('product-detail',slug=slug)
+
+
+
+    """if qs.exists():
+        messages.warning(request,"YOU already added it to the list ")
+        return redirect('product-detail', slug=slug)
+
+    else:
+        items=Item.objects.filter(slug=slug)
+        fav_item=FavouriteList.objects.create(user=request.user)
+        fav_item.item_name.add(items)
+
+        # favourite_item.item_name.set(items)
+
+        "" set method id user because of create method is not use for MANYTOMANY Field ""
+
+        # favourite_item.save()"""
+
+
+    return redirect('product-detail', slug=slug)
+@login_required
+def remove_from_fav(request,slug):
+    item = get_object_or_404(Item, slug=slug)
+    qs=Item.objects.filter(favourite=request.user)
+    if qs.exists():
+        item.favourite.remove(request.user)
+        messages.warning(request,f"successfully remove {item.title} ")
+        return redirect('product-detail', slug=slug)
+    else:
+        messages.info(request," You don't have this product in your cart ")
+        return redirect('product-detail', slug=slug)
+
+
+
+
+@login_required
+def yourFavListView(request):
+    #favList=FavouriteList.objects.filter(user=request.user)
+    favList=Item.objects.filter(favourite=request.user)
+    context={
+        'object_list':favList,
+    }
+    return render(request,'aws/indexFav.html',context)
+
+
+"""class FavListView(LoginRequiredMixin,View):
+    # model = FavouriteList
+    template_name = 'core/index.html'
+    # context_object_name = 'object_list'
+    def get_context_data(self, **kwargs):
+        context=super().get_context_data(**kwargs)
+        context={
+            'object_list':FavouriteList.objects.get(user=self.request.user)
+
+        }
+        return redirect(self.request,self.template_name,context)
+    def get(self, *args, **kwargs):
+        try:
+            order = FavouriteList.objects.get(user=self.request.user)
+            context = {
+                'object': order
+            }
+            return render(self.request, self.template_name, context)
+        except ObjectDoesNotExist:
+            messages.warning(self.request, "You do not have an active order")
+            return redirect('test_index')
+"""
+
+
+def is_valid_name(para):
+    return para!='' and para is not None
+def shopCategory(request):
+    template_name='aws/category.html'
+
+    obj=Item.objects.all()
+    counter=Item.objects.all().count()
+
+
+    cat=Category.objects.all()
+    brand=Brand.objects.all()
+    subCat=SubCategory.objects.all()
+
+    category_name=request.GET.get('category')
+    sub_category_name=request.GET.get('subcategory')
+    brand_name=request.GET.get('brand')
+
+    if is_valid_name(category_name) and category_name != 'Category':
+        obj=obj.filter(category__name=category_name)
+        counter=obj.filter(category__name=category_name).count()
+
+
+    if is_valid_name(brand_name) and brand_name != 'Brand':
+        obj=obj.filter(brand__name=brand_name)
+        counter=obj.filter(brand__name=brand_name).count()
+
+    if is_valid_name(sub_category_name) and sub_category_name !='SubCategory':
+        obj=obj.filter(subcategory__name=sub_category_name)
+        counter=obj.filter(subcategory__name=sub_category_name).count()
+
+
+
+    context={
+        'count':counter,
+        'object':obj,
+        'categories':cat,
+        'subcategories':subCat,
+        'brands':brand,
+    }
+    return render(request,template_name,context)
+
+@login_required
+def test_function_with_index(request):
+    items=ProductViewByUser.objects.filter(user=request.user)
+    context={
+        'object_list':items
+    }
+    return render(request,'core/index.html',context)
