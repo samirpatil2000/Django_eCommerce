@@ -4,10 +4,11 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render,get_object_or_404,redirect,reverse
 from django.views.generic.base import View
 
-from.models import Item,OrderItem,Order,BillingAddress,Payment,FavouriteList,Category,SubCategory,Brand
+from.models import Item,OrderItem,Order,BillingAddress,Payment,FavouriteList,Category,SubCategory,Brand,ProductViewByUser
 from django.views.generic import ListView,DetailView
 from django.utils import timezone
 
@@ -43,11 +44,38 @@ class HomeView(ListView):
 
 """the context in this case is change now it is not items any more now it is object_list"""
 
-class TestIndex(ListView):
-    model = Item
-    template_name = 'aws/index.html'
-    context_object_name = 'object_list'
-    paginate_by = 4
+
+def home_view(request):
+    feature_product=Item.objects.all()[0:3]
+
+    #TODO add hre history of user
+
+    inspire_history_product=Item.objects.all()
+    template_name ='aws/index.html'
+
+    history_items=ProductViewByUser.objects.filter(user=request.user)
+
+
+    # Create a paginator to split your products queryset
+    paginator = Paginator(inspire_history_product, 1)  # Show 25 contacts per page
+    # Get the current page number
+    page = request.GET.get('page')
+    # Get the current slice (page) of products
+    inspire_history_product_paginator = paginator.get_page(page)
+    try:
+        paginated_queryset=paginator.page(page)
+    except PageNotAnInteger:
+        paginated_queryset=paginator.page(1)
+    except EmptyPage: # showing last page
+        paginated_queryset=paginator.page(paginator.num_pages)
+
+    context={
+        'queryset': paginated_queryset,
+        'feature_product':feature_product,
+        'inspire_product':inspire_history_product_paginator,
+        'history':history_items,
+    }
+    return render(request,template_name,context)
 
 
 class ItemDetailView(DetailView):
@@ -60,6 +88,27 @@ class TestItemDetailView(DetailView):
     model = Item
     template_name = 'aws/single-product.html'
     context_object_name = 'object'
+
+    def get(self, request, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            product = self.kwargs['slug']
+            product_id=product.pk
+            ProductViewByUser.objects.get_or_create(user=request.user,product=product_id)
+
+def product_detail_view(request,slug):
+    item = get_object_or_404(Item, slug=slug)
+    template_name = 'aws/single-product.html'
+
+    if request.user.is_authenticated:
+        ProductViewByUser.objects.get_or_create(user=request.user,product=item)
+
+    context={
+        'object':item
+    }
+    return render(request,template_name,context)
+
+
+
 
 @login_required
 def add_to_cart(request, slug):
@@ -520,12 +569,10 @@ def shopCategory(request):
     }
     return render(request,template_name,context)
 
-# @login_required
-# def checkout_test(request):
-#     orders=Order.objects.get(user=request.user,ordered=False)
-#     context={
-#         'order':orders,
-#     }
-#     if request.method == 'POST':
-#
-#     return render(request,'aws/checkout.html',context)
+@login_required
+def test_function_with_index(request):
+    items=ProductViewByUser.objects.filter(user=request.user)
+    context={
+        'object_list':items
+    }
+    return render(request,'core/index.html',context)

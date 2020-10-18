@@ -104,18 +104,18 @@
           <div class="row">
             <div class="col-lg-8">
               <h3>Billing Details</h3>
-              {% comment %}
               <form method="POST">
               {% csrf_token %}
               {{ form | crispy }}
               <button class="btn btn-primary" type="submit">Checkout</button>
               </form>
-              {% endcomment %}
+              {% comment %}
               <form
                 class="row contact_form"
                 action="#"
                 method="post"
                 novalidate="novalidate">
+                              {% csrf_token %}
                 <div class="col-md-6 form-group p_star">
                   <input
                     type="text"
@@ -229,6 +229,7 @@
 
                 <button class="btn btn-primary" type="submit">Checkout</button>
               </form>
+              {% endcomment %}
             </div>
             <div class="col-lg-4">
               <div class="order_box">

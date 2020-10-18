@@ -9,10 +9,8 @@
 <h1> The Favourite List </h1>
 {% for i in object_list %}
 
-<h4> <h5>{{forloop.counter}} .</h5> {{ i.title }}</h4>
-<h4>{{ i.price }}</h4>
-<h4>{{ i.discount_price }}</h4>
-<h4>{{ i.get_category_display }}</h4>
+<h4> <h5>{{forloop.counter}} .</h5> {{ i.user.username }}</h4>
+<h4>{{ i.product.title }}</h4>
 {% endfor %}
 
 </body>
