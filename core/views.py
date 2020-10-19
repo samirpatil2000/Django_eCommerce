@@ -47,13 +47,17 @@ class HomeView(ListView):
 
 def home_view(request):
     feature_product=Item.objects.all()[0:3]
+    history_items=[]
 
     #TODO add hre history of user
 
     inspire_history_product=Item.objects.all()
     template_name ='aws/index.html'
 
-    history_items=ProductViewByUser.objects.filter(user=request.user)
+    if request.user.is_authenticated:
+        history_items=ProductViewByUser.objects.filter(user=request.user)
+    else:
+        history_items=ProductViewByUser.objects.all()
 
 
     # Create a paginator to split your products queryset

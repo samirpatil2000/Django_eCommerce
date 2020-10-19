@@ -72,44 +72,86 @@
                         data-toggle="dropdown"
                         role="button"
                         aria-haspopup="true"
-                        aria-expanded="false"
-                      >Explore</a>
+                        aria-expanded="false">Explore</a>
                       <ul class="dropdown-menu">
                         <li class="nav-item">
                           <a class="nav-link" href="{% url 'shop-category' %}">Shop</a>
-                        </li>
+
                         <li class="nav-item">
-                          <a class="nav-link" href="{% url 'checkouts' %}">Checkout</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="{% url 'order_summary' %}">Shopping Cart</a>
+                          <a class="nav-link" href="#">Something Ele</a>
                         </li>
                       </ul>
                     </li>
-                    {% comment %}
-                    <li class="nav-item active submenu dropdown">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item submenu dropdown">
                       <a
                         href="#"
                         class="nav-link dropdown-toggle"
                         data-toggle="dropdown"
                         role="button"
                         aria-haspopup="true"
-                        aria-expanded="false"
-                        >Blog</a
-                      >
+                        aria-expanded="false">Profile</a>
                       <ul class="dropdown-menu">
                         <li class="nav-item">
-                          <a class="nav-link" href="blog.html">Blog</a>
+                          <a class="nav-link" href="{% url 'order_summary' %}">
+                            Summary
+                          </a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link" href="single-blog.html"
-                            >Blog Details</a
-                          >
+                          <a class="nav-link" href="{% url 'checkouts' %}">Checkout</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
                         </li>
                       </ul>
                     </li>
+                    {% else %}
+                      <li class="nav-item submenu dropdown">
+                        <a
+                          href="#"
+                          class="nav-link dropdown-toggle"
+                          data-toggle="dropdown"
+                          role="button"
+                          aria-haspopup="true"
+                          aria-expanded="false">Login</a>
+                        <ul class="dropdown-menu">
+                          <li class="nav-item">
+                            <a class="nav-link" href="{% url 'account_login' %}">Login</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="{% url 'account_signup' %}">Register</a>
+                          </li>
+                        </ul>
+                      </li>
+                    {% endif %}
+                    {% if user.sellerprofilecreateadmin %}
+                      <li class="nav-item submenu dropdown">
+                        <a
+                          href="#"
+                          class="nav-link dropdown-toggle"
+                          data-toggle="dropdown"
+                          role="button"
+                          aria-haspopup="true"
+                          aria-expanded="false">Seller Product</a>
+                        <ul class="dropdown-menu">
+                          <li class="nav-item">
+                            <a class="nav-link" href="#">Your Products</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="#">Sell Products</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="#">Add Products</a>
+                          </li>
+                        </ul>
+                      </li>
+                    {% endif %}
 
 
+
+
+
+                    {% comment %}
                     <li class="nav-item submenu dropdown">
                       <a
                         href="#"
