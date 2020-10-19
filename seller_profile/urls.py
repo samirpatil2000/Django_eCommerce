@@ -7,6 +7,7 @@ from. import views
 
 urlpatterns = [
    # path('',HomeView.as_view(),name='index'),
-   path('',views.seller_home,name='seller_home'),
+   path('',views.seller_shops,name='seller_home'),
+   path('create/',views.create_seller_profile_view,name='seller_profile_create')
 
 ]

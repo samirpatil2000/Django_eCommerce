@@ -9,7 +9,8 @@ from django.shortcuts import render,get_object_or_404,redirect,reverse
 from django.views.generic.base import View
 
 from.models import Item,OrderItem,Order,BillingAddress,Payment,FavouriteList,Category,SubCategory,Brand,ProductViewByUser
-from django.views.generic import ListView,DetailView
+from seller_profile.models import SellerProfileForUser
+from django.views.generic import ListView,DetailView,CreateView
 from django.utils import timezone
 
 
@@ -176,6 +177,8 @@ def remove_from_cart(request, slug):
                 ordered=False
             )[0]
             order.items.remove(order_item)
+            #TODO it is remove from oder but it is still their in Your OrderItem So your have to delete that also
+            order_item.delete()
             messages.warning(request, "{} was removed from your cart.".format(item))
             return redirect("product-detail", slug=slug)
         else:
@@ -233,6 +236,7 @@ def remove_single_item_from_cart(request, slug):
                 order_item.save()
             else:
                 order.items.remove(order_item)
+                order_item.delete()
 
 
             messages.warning(request, "{} was removed from your cart.".format(item))
