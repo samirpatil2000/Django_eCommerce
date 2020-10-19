@@ -558,11 +558,29 @@ def shopCategory(request):
         obj=obj.filter(subcategory__name=sub_category_name)
         counter=obj.filter(subcategory__name=sub_category_name).count()
 
+    # Create a paginator to split your products queryset
+    """
+    paginator = Paginator(obj, 5)  # Show 25 contacts per page
+    # Get the current page number
+    page = request.GET.get('page')
+    # Get the current slice (page) of products
+    items_paginator = paginator.get_page(page)
+    try:
+        paginated_queryset=paginator.page(page)
+    except PageNotAnInteger:
+        paginated_queryset=paginator.page(1)
+    except EmptyPage: # showing last page
+        paginated_queryset=paginator.page(paginator.num_pages)
+        
+    """
+
 
 
     context={
+        #'queryset': paginated_queryset,
         'count':counter,
-        'object':obj,
+        # 'object':items_paginator,
+         'object':obj,
         'categories':cat,
         'subcategories':subCat,
         'brands':brand,
