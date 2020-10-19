@@ -289,10 +289,12 @@ class CheckoutView(LoginRequiredMixin,View):
     def get(self,*args,**kwargs):
         form=CheckoutForm()
         order=Order.objects.get(user=self.request.user,ordered=False)
+        address=BillingAddress.objects.filter(user=self.request.user)
 
         context={
             'order':order,
-            'form':form
+            'form':form,
+            'addresses':address,
         }
         return render(self.request,'aws/checkout.html',context)
 
