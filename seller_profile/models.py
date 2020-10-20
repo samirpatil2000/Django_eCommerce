@@ -23,11 +23,11 @@ class SellerProfileCreateAdmin(models.Model):
 
 class SellerProfileForUser(models.Model):
     name=models.CharField(max_length=100,default="Seller")
-    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     seller_category=models.ForeignKey(SellerCategory,on_delete=models.CASCADE,blank=True,null=True)
     seller_profile=models.ForeignKey(SellerProfileCreateAdmin,on_delete=models.CASCADE)
+    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,blank=True,null=True)
 
 
     def __str__(self):
-        return f'{self.name} of {self.user.username}'
+        return f'{self.name} of {self.seller_profile.user.username}'
 
