@@ -460,13 +460,13 @@ def contact(request):
 def add_to_favourite(request,slug):
     item = get_object_or_404(Item, slug=slug)
 
-    qs=Item.objects.filter(favourite=request.user)
+    qs=Item.objects.filter(favourite=request.user,slug=slug)
     if qs.exists():
-        messages.warning(request," You already added it ")
+        messages.warning(request,f"{item.title} is already in your favourites ")
         return redirect('product-detail', slug=slug)
     else:
         item.favourite.add(request.user)
-        messages.info(request," Product is added to favourite ")
+        messages.info(request,f"{item.title} is added to favourite ")
 
     # return redirect('product-detail',slug=slug)
 

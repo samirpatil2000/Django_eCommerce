@@ -120,7 +120,7 @@ class Item(models.Model):
 
     """  In template you have to use {{ i.get_label_display }}  ==> primary  If   {{ i.label }} ===> P """
 
-    slug=models.SlugField(unique=True)
+    slug=models.SlugField(blank=True,null=True,unique=True)
 
     category=models.ForeignKey(Category,on_delete=models.CASCADE,blank=True,null=True)
     brand=models.ForeignKey(Brand,on_delete=models.CASCADE,blank=True,null=True)

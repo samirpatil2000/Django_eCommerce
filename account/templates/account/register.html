@@ -1,0 +1,60 @@
+
+
+
+{% extends 'aws/base.html' %}
+{% load crispy_forms_tags %}
+{% block body %}
+
+<div class="container">
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="'border-bottom mb-4">Register </legend>
+           {{ registration_form | crispy  }}
+        </fieldset>
+        <div class="form-group">
+            <button class="btn-outline-info" type="submit"> Sign Up</button>
+        </div>
+    </form>
+    <div class="'border-top pt-3">
+        <small class="'text-muted">
+            Already Have An Account ? <a class="ml-2" href="{% url 'account_login' %}">Login</a>
+        </small>
+    </div>
+</div>
+{% endblock%}
+
+
+
+
+{% comment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        {% load crispy_forms_tags %}
+    <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <title>Register</title>
+</head>
+<body>
+
+  {% for field in registration_form %}
+
+          {{field | as_crispy_field }}
+
+          {% if field.help_text %}
+                <small>{{field.help_text}}</small>
+          {% endif %}
+
+          {% for error in field.errors %}
+                <p style="color: red">{{ error }}</p>
+          {% endfor %}
+
+          {% if login_form.non_field_errors %}
+                <p style="color: red">{{ login_form.non_field_errors }}</p>
+          {% endif %}
+      {% endfor %}
+  </body>
+</html>
+{% endcomment %}
