@@ -32,3 +32,8 @@ def seller_shops(request):
         'shops':shops
     }
     return render(request,'seller_profile/seller_home.html',context)
+def seller_dashbord(request):
+    context={
+
+    }
+    return render(request,'seller_profile/seller_dashboard.html',context)
