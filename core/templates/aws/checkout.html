@@ -10,6 +10,7 @@
     <!--================Header Menu Area =================-->
 
     <!--================Home Banner Area =================-->
+    {% comment %}
     <section class="banner_area">
       <div class="banner_inner d-flex align-items-center">
         <div class="container">
@@ -18,6 +19,33 @@
             <div class="mb-3 mb-md-0">
               <h2>Product Checkout</h2>
               <p>Very us move be blessed multiply night</p>
+            </div>
+            <div class="page_link">
+              <a href="index.html">Home</a>
+              <a href="checkout.html">Product Checkout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    {% endcomment %}
+    <section class="banner_area">
+      <div class="banner_inner d-flex align-items-center">
+        <div class="container">
+          <div
+            class="banner_content d-md-flex justify-content-between align-items-center">
+            <div class="mb-1 mb-md-0">
+              <br>
+              <h2> Your Save Address </h2>
+              {% for address in addresses %}
+              <h4> Street Address : {{ address.street_address }}</h4>
+              <h4> Apartment Address : {{ address.apartment_address }}</h4>
+              <h4> Country : {{ address.country }}</h4>
+              <h4> Zip : {{ address.zip }}</h4>
+              <hr>
+
+              {% endfor %}
+
             </div>
             <div class="page_link">
               <a href="index.html">Home</a>

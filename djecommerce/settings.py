@@ -41,13 +41,19 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django_countries',
     'crispy_forms',
+                                  #
+    # 'allauth',                 #
+    # 'allauth.account',        # # # # # # # # # #                #TODO by removeing this added app name and model name
+    # 'allauth.socialaccount',   #                #
+                                  #               #
+    #Local Apps                                   #
+    'core',                                       #
+    'seller_profile',                             #
+    'account',                                    #
+]                                                 #
+                                                  #
+AUTH_USER_MODEL = 'account.Account' #appName.modelName
 
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-
-    'core',
-]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -130,7 +136,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 # CRISPY_TEMPLATE_PACK='bootstrap4'
 LOGIN_REDIRECT_URL='index'
-# LOGIN_URL='login'
+LOGIN_URL='account_login'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 MEDIA_URL='/media/'
 
@@ -146,7 +152,15 @@ AUTHENTICATION_BACKENDS = (
 
 )
 
-
+CRISPY_TEMPLATE_PACK='bootstrap4'
 STRIPE_SECRET_KEY = ''
 STRIPE_PUBLIC_KEY = ''
 SITE_ID = 1
+
+
+EMAIL_BACKEND= 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST='smtp.gmail.com'
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER='nousername7420@gmail.com'
+EMAIL_HOST_PASSWORD='Bluesam@123'

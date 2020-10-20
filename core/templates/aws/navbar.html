@@ -72,44 +72,64 @@
                         data-toggle="dropdown"
                         role="button"
                         aria-haspopup="true"
-                        aria-expanded="false"
-                      >Explore</a>
+                        aria-expanded="false">Explore</a>
                       <ul class="dropdown-menu">
                         <li class="nav-item">
                           <a class="nav-link" href="{% url 'shop-category' %}">Shop</a>
-                        </li>
+
                         <li class="nav-item">
-                          <a class="nav-link" href="{% url 'checkouts' %}">Checkout</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="{% url 'order_summary' %}">Shopping Cart</a>
+                          <a class="nav-link" href="#">Something Else</a>
                         </li>
                       </ul>
                     </li>
-                    {% comment %}
-                    <li class="nav-item active submenu dropdown">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item submenu dropdown">
                       <a
                         href="#"
                         class="nav-link dropdown-toggle"
                         data-toggle="dropdown"
                         role="button"
                         aria-haspopup="true"
-                        aria-expanded="false"
-                        >Blog</a
-                      >
+                        aria-expanded="false">Profile</a>
                       <ul class="dropdown-menu">
                         <li class="nav-item">
-                          <a class="nav-link" href="blog.html">Blog</a>
+                          <a class="nav-link" href="{% url 'order_summary' %}">
+                            Summary
+                          </a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link" href="single-blog.html"
-                            >Blog Details</a
-                          >
+                          <a class="nav-link" href="{% url 'checkouts' %}">Checkout</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
                         </li>
                       </ul>
                     </li>
+                    {% else %}
+                      <li class="nav-item submenu dropdown">
+                        <a
+                          href="#"
+                          class="nav-link dropdown-toggle"
+                          data-toggle="dropdown"
+                          role="button"
+                          aria-haspopup="true"
+                          aria-expanded="false">Login</a>
+                        <ul class="dropdown-menu">
+                          <li class="nav-item">
+                            <a class="nav-link" href="{% url 'account_login' %}">Login</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="{% url 'account_signup' %}">Register</a>
+                          </li>
+                        </ul>
+                      </li>
+                    {% endif %}
 
 
+
+
+
+                    {% comment %}
                     <li class="nav-item submenu dropdown">
                       <a
                         href="#"
@@ -167,6 +187,57 @@
               </div>
             </div>
           </nav>
-        </div>
+          </div>
+        {% if user.sellerprofilecreateadmin %}
+          <nav class="navbar navbar-expand-lg navbar-primary w-100" style="background-color: #0000cc;">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div
+              class="collapse navbar-collapse offset w-100"
+              id="navbarSellerSupportedContent">
+              <div class="row w-100 mr-0">
+                <div class="col-lg-8 pr-0">
+                  <ul class="nav navbar-nav center_nav pull-right">
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'seller_dashboard' %}">DashBoard</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="">Your Products</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'add_product' %}">Add New Product</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'seller_home' %}">Your Shops</a>
+                    </li>
+                      <li class="nav-item submenu dropdown">
+                        <a
+                          href="#"
+                          class="nav-link dropdown-toggle"
+                          data-toggle="dropdown"
+                          role="button"
+                          aria-haspopup="true"
+                          aria-expanded="false">Something Else</a>
+                        <ul class="dropdown-menu">
+                          <li class="nav-item">
+                            <a class="nav-link" href="#">Your Products</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="#">Sell Products</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="#">Add Products</a>
+                          </li>
+                        </ul>
+                      </li>
+
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </nav>
+        {% endif %}
+
+
       </div>
     </header>

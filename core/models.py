@@ -2,11 +2,13 @@ import random
 
 from django.db import models
 from django.conf import settings
+from django.db.models.signals import pre_save
 from django.shortcuts import render,reverse
 
 # Create your models here.
+from django.utils.text import slugify
 from django_countries.fields import CountryField
-
+from seller_profile.models import SellerProfileForUser
 CATEGORY_CHOICES=(
     ('S', 'MAC'),
     ('SW', 'MAC PRO'),
@@ -87,6 +89,21 @@ class Payment(models.Model):
          return self.user.username
 
 
+# alphabet = 'abcdefghijklmnopqrstuvwxyz'
+alphabet = 'azsxdcfvgbqwertyhnmjuiklop'
+
+
+
+def random_string_gen():
+    n=random.randint(0,len(alphabet))
+    m=random.randint(0,len(alphabet))
+    str1=alphabet[n:n+5]
+    str2=alphabet[m:m+6]
+    if m==n:
+        return random_string_gen
+    random_string=f'{str1}-{str2}'
+    return random_string
+
 
 class Item(models.Model):
     title=models.CharField(max_length=100,default=default_product_name)
@@ -103,7 +120,7 @@ class Item(models.Model):
 
     """  In template you have to use {{ i.get_label_display }}  ==> primary  If   {{ i.label }} ===> P """
 
-    slug=models.SlugField(unique=True)
+    slug=models.SlugField(blank=True,null=True,unique=True)
 
     category=models.ForeignKey(Category,on_delete=models.CASCADE,blank=True,null=True)
     brand=models.ForeignKey(Brand,on_delete=models.CASCADE,blank=True,null=True)
@@ -114,6 +131,9 @@ class Item(models.Model):
     favourite=models.ManyToManyField(settings.AUTH_USER_MODEL,
                                      blank=True,null=True)
     # quantity=models.IntegerField(default=1)
+    sellerprofileshop=models.ForeignKey(SellerProfileForUser,on_delete=models.CASCADE)
+
+    random_string_gen_for_slug=models.CharField(default=random_string_gen,max_length=100)
 
 
     def __str__(self):
@@ -130,6 +150,15 @@ class Item(models.Model):
 
     def get_add_to_favourites_url(self):
         return reverse('add_to_favourite',kwargs={'slug':self.slug})
+
+
+# TODO this is the slug field signal
+
+def pre_save_slug(sender,instance,*args,**kwargs):
+    if not instance.slug:
+        instance.slug=slugify(f'{instance.title}-{instance.random_string_gen_for_slug}')
+pre_save.connect(pre_save_slug,sender=Item)
+
 
 
 

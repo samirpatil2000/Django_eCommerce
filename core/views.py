@@ -9,7 +9,8 @@ from django.shortcuts import render,get_object_or_404,redirect,reverse
 from django.views.generic.base import View
 
 from.models import Item,OrderItem,Order,BillingAddress,Payment,FavouriteList,Category,SubCategory,Brand,ProductViewByUser
-from django.views.generic import ListView,DetailView
+from seller_profile.models import SellerProfileForUser
+from django.views.generic import ListView,DetailView,CreateView
 from django.utils import timezone
 
 
@@ -47,13 +48,17 @@ class HomeView(ListView):
 
 def home_view(request):
     feature_product=Item.objects.all()[0:3]
+    history_items=[]
 
     #TODO add hre history of user
 
     inspire_history_product=Item.objects.all()
     template_name ='aws/index.html'
 
-    history_items=ProductViewByUser.objects.filter(user=request.user)
+    if request.user.is_authenticated:
+        history_items=ProductViewByUser.objects.filter(user=request.user)
+    else:
+        history_items=ProductViewByUser.objects.all()
 
 
     # Create a paginator to split your products queryset
@@ -172,6 +177,8 @@ def remove_from_cart(request, slug):
                 ordered=False
             )[0]
             order.items.remove(order_item)
+            #TODO it is remove from oder but it is still their in Your OrderItem So your have to delete that also
+            order_item.delete()
             messages.warning(request, "{} was removed from your cart.".format(item))
             return redirect("product-detail", slug=slug)
         else:
@@ -229,6 +236,7 @@ def remove_single_item_from_cart(request, slug):
                 order_item.save()
             else:
                 order.items.remove(order_item)
+                order_item.delete()
 
 
             messages.warning(request, "{} was removed from your cart.".format(item))
@@ -289,10 +297,12 @@ class CheckoutView(LoginRequiredMixin,View):
     def get(self,*args,**kwargs):
         form=CheckoutForm()
         order=Order.objects.get(user=self.request.user,ordered=False)
+        address=BillingAddress.objects.filter(user=self.request.user)
 
         context={
             'order':order,
-            'form':form
+            'form':form,
+            'addresses':address,
         }
         return render(self.request,'aws/checkout.html',context)
 
@@ -450,13 +460,13 @@ def contact(request):
 def add_to_favourite(request,slug):
     item = get_object_or_404(Item, slug=slug)
 
-    qs=Item.objects.filter(favourite=request.user)
+    qs=Item.objects.filter(favourite=request.user,slug=slug)
     if qs.exists():
-        messages.warning(request," You already added it ")
+        messages.warning(request,f"{item.title} is already in your favourites ")
         return redirect('product-detail', slug=slug)
     else:
         item.favourite.add(request.user)
-        messages.info(request," Product is added to favourite ")
+        messages.info(request,f"{item.title} is added to favourite ")
 
     # return redirect('product-detail',slug=slug)
 
@@ -558,11 +568,29 @@ def shopCategory(request):
         obj=obj.filter(subcategory__name=sub_category_name)
         counter=obj.filter(subcategory__name=sub_category_name).count()
 
+    # Create a paginator to split your products queryset
+    """
+    paginator = Paginator(obj, 5)  # Show 25 contacts per page
+    # Get the current page number
+    page = request.GET.get('page')
+    # Get the current slice (page) of products
+    items_paginator = paginator.get_page(page)
+    try:
+        paginated_queryset=paginator.page(page)
+    except PageNotAnInteger:
+        paginated_queryset=paginator.page(1)
+    except EmptyPage: # showing last page
+        paginated_queryset=paginator.page(paginator.num_pages)
+        
+    """
+
 
 
     context={
+        #'queryset': paginated_queryset,
         'count':counter,
-        'object':obj,
+        # 'object':items_paginator,
+         'object':obj,
         'categories':cat,
         'subcategories':subCat,
         'brands':brand,

@@ -162,7 +162,7 @@
                   <i class="lnr lnr lnr-diamond"></i>
                 </a>
                 {% endcomment %}
-                <a class="icon_btn" href="{%  url 'add_to_favourite' slug=object.slug %}">
+                <a class="icon_btn" href="{{ object.get_add_to_favourites_url }}">
                   <i class="lnr lnr lnr-heart"></i>
                 </a>
               </div>
