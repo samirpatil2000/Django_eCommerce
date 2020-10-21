@@ -17,7 +17,7 @@
             </div>
             <div class="page_link">
               <a href="{{ obj.get_shop_absolute_url }}">View</a>
-              <a href="#">Add Products</a>
+              <a href="{% url 'add_product_from_shop' obj.id %}">Add Products</a>
             </div>
           </div>
         </div>

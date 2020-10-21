@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from .models import SellerProfileForUser,SellerProfileCreateAdmin
 from django.views.generic import CreateView
-from .forms import CreateSellerProfileForm,AddProductFrom
+from .forms import CreateSellerProfileForm,AddProductForm,AddProductFromShop
 from core.models import Item
 # Create your views here.
 
@@ -43,7 +43,7 @@ def seller_dashbord(request):
 
 
 def seller_add_item(request):
-    addproductform=AddProductFrom(request.POST or None)
+    addproductform=AddProductForm(request.POST or None)
     #sellerprofile_shop=get_object_or_404(SellerProfileForUser,user=request.user)
     context={
 
@@ -54,9 +54,9 @@ def seller_add_item(request):
             #addproductform.instance.slug = request.user
             add_product=addproductform.save(commit=False)
             add_product.save()
-            context['addproductform']=addproductform
             messages.info(request,'Product is added')
             return redirect('seller_home')
+        context['addproductform'] = addproductform
     return render(request,'seller_profile/add_product_form.html' ,{'addproductform': addproductform})
 
 # shop detail view for products
@@ -70,3 +70,19 @@ def shop_details_product(request,id):
     }
     return render(request,'seller_profile/shop_detail.html',context)
 
+#create product from shops
+@login_required
+def add_product_from_shop(request,id):
+    seller_shop=get_object_or_404(SellerProfileForUser,id=id)
+    addproductfromshopform=AddProductFromShop(request.POST or None)
+    context={
+
+    }
+    if request.method=="POST":
+        if addproductfromshopform.is_valid():
+            add_product=addproductfromshopform.save(commit=False)
+            addproductfromshopform.instance.sellerprofileshop=seller_shop
+            add_product.save()
+            messages.info(request,'Product is added')
+            return redirect('seller_home')
+    return render(request,'seller_profile/add_product_from_shop.html',{'addproductfromshopform':addproductfromshopform})
