@@ -151,6 +151,13 @@ class Item(models.Model):
     def get_add_to_favourites_url(self):
         return reverse('add_to_favourite',kwargs={'slug':self.slug})
 
+    def get_update_item_url(self):
+        return reverse('update_product',kwargs={'slug':self.slug})
+
+    def get_delete_item_url(self):
+        return reverse('delete_product',kwargs={'slug':self.slug})
+
+
 
 # TODO this is the slug field signal
 

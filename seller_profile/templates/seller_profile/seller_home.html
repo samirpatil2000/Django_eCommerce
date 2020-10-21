@@ -3,6 +3,7 @@
 {% block body %}
 
 <div class="container">
+    <br>
     <h1>Your Shops</h1>
 
        {% for obj in shops %}
@@ -16,8 +17,8 @@
               <p>This is the {{ obj.name }}</p>
             </div>
             <div class="page_link">
-              <a href="#">Update</a>
-              <a href="#">Add Products</a>
+              <a href="{{ obj.get_shop_absolute_url }}">View</a>
+              <a href="{% url 'add_product_from_shop' obj.id %}">Add Products</a>
             </div>
           </div>
         </div>
