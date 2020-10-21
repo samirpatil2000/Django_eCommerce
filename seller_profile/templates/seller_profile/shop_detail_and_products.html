@@ -50,11 +50,12 @@
                 <tr>
                   <th scope="col">Product</th>
                   <th scope="col">Price</th>
-                  <th scope="col">Discount Price</th>
+                  <th scope="col">Discount <br>&nbsp;  Price</th>
                   <th scope="col">Quantity</th>
-                  <th scope="col">Quantity sold</th>
-                  <th scope="col">Total Amount</th>
+                  <th scope="col">Quantity <br>&nbsp;  Sold</th>
+                  <th scope="col">&nbsp; Total <br>Amount</th>
                   <th scope="col">Update</th>
+                  <th scope="col">Delete</th>
                 </tr>
               </thead>
               <tbody>
@@ -80,21 +81,24 @@
                     {% if order_item.discount_price %}
                          <h5>{{ order_item.discount_price }}</h5>
                     {% else %}
-                        <h5>Add Discount</h5>
+                        <h5>10%</h5>
                     {% endif %}
                   </td>
                   <td>
-                     <h5>Product Quantity</h5>
+                     <h5>20</h5>
                  </td>
                  <td>
-                     <h5>Sold Quantity</h5>
+                     <h5>10</h5>
                  </td>
 
                   <td>
-                    <h5>Total</h5>
+                    <h5>120000</h5>
                   </td>
                   <td>
-                    <a style='color: black;' href="{{ order_item.get_update_item_url }}">View/Update</a>
+                    <a style='color: blue;' href="{{ order_item.get_absolute_url }}">View/Update</a>
+                  </td>
+                  <td>
+                    <a style='color: red;' href="{{ order_item.get_delete_item_url }}">Delete</a>
                   </td>
                 </tr>
 

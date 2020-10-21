@@ -100,6 +100,7 @@ def update_product_from_shop(request,slug):
             obj=updateProductForm.save(commit=False)
             obj.save()
             product=obj
+            messages.info(request,f'{product.title} is updated')
             return redirect('product-detail',slug)
     form=UpdateProductForm(
         initial={
@@ -117,5 +118,10 @@ def update_product_from_shop(request,slug):
     }
     return render(request,'seller_profile/edit_product_from_shop.html',context)
 
-
-#
+def delete_product(request,slug):
+    product=get_object_or_404(Item,slug=slug)
+    seller_shop=product.sellerprofileshop
+    if request.user != seller_shop.seller_profile.user:
+        return HttpResponse("Restricted  ...!")
+    product.delete()
+    return redirect('seller_home')
