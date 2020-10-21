@@ -1,9 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from .models import SellerProfileForUser,SellerProfileCreateAdmin
-from django.views.generic import CreateView
-from .forms import CreateSellerProfileForm,AddProductForm,AddProductFromShop
+from django.views.generic import CreateView,UpdateView
+from .forms import CreateSellerProfileForm,AddProductForm,AddProductFromShop,UpdateProductForm
 from core.models import Item
 # Create your views here.
 
@@ -68,7 +69,7 @@ def shop_details_product(request,id):
         'shop':user_shop,
         'products':user_products
     }
-    return render(request,'seller_profile/shop_detail.html',context)
+    return render(request,'seller_profile/shop_detail_and_products.html',context)
 
 #create product from shops
 @login_required
@@ -86,3 +87,35 @@ def add_product_from_shop(request,id):
             messages.info(request,'Product is added')
             return redirect('seller_home')
     return render(request,'seller_profile/add_product_from_shop.html',{'addproductfromshopform':addproductfromshopform})
+
+@login_required
+def update_product_from_shop(request,slug):
+    product=get_object_or_404(Item,slug=slug)
+    seller_shop=product.sellerprofileshop
+    if request.user != seller_shop.seller_profile.user:
+        return HttpResponse("Restricted  ...!")
+    if request.POST:
+        updateProductForm=UpdateProductForm(request.POST or None,instance=product)
+        if updateProductForm.is_valid():
+            obj=updateProductForm.save(commit=False)
+            obj.save()
+            product=obj
+            return redirect('product-detail',slug)
+    form=UpdateProductForm(
+        initial={
+            "title":product.title ,
+            "price":product.price ,
+            "discount_price":product.discount_price ,
+            "category":product.category ,
+            "brand":product.brand ,
+            "subcategory":product.subcategory ,
+            "desc":product.desc ,
+        }
+    )
+    context={
+        'updateproductform':form,
+    }
+    return render(request,'seller_profile/edit_product_from_shop.html',context)
+
+
+#

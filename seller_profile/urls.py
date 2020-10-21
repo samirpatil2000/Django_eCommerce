@@ -4,6 +4,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path,include
 from. import views
+from .views import UpdateProductForm
 
 urlpatterns = [
    # path('',HomeView.as_view(),name='index'),
@@ -13,5 +14,6 @@ urlpatterns = [
    path('add_product/',views.seller_add_item,name='add_product'),
    path('add_product_from_shop/<id>',views.add_product_from_shop,name='add_product_from_shop'),
    path('shop_detail/<id>',views.shop_details_product,name='shop_details_product'),
+   path('update_product/<slug>',views.update_product_from_shop,name='update_product'),
 
 ]
