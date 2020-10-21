@@ -3,6 +3,9 @@ from django.conf import settings
 # Create your models here.
 import random
 
+from django.urls import reverse
+
+
 def default_seller_Cat():
     seller_cat_list=['Electronics','Books','Home','Kitchen','Cloths and Merchandise']
     n=random.randrange(0,len(seller_cat_list))
@@ -30,4 +33,7 @@ class SellerProfileForUser(models.Model):
 
     def __str__(self):
         return f'{self.name} of {self.seller_profile.user.username}'
+
+    def get_shop_absolute_url(self):
+        return reverse('shop_details_product',kwargs={'id':self.pk})
 

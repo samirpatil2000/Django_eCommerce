@@ -4,6 +4,7 @@ from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from .models import SellerProfileForUser,SellerProfileCreateAdmin
 from django.views.generic import CreateView
 from .forms import CreateSellerProfileForm,AddProductFrom
+from core.models import Item
 # Create your views here.
 
 
@@ -58,5 +59,14 @@ def seller_add_item(request):
             return redirect('seller_home')
     return render(request,'seller_profile/add_product_form.html' ,{'addproductform': addproductform})
 
+# shop detail view for products
+def shop_details_product(request,id):
+    user_shop=get_object_or_404(SellerProfileForUser,id=id)
+    user_products=Item.objects.filter(sellerprofileshop=user_shop)
 
+    context={
+        'shop':user_shop,
+        'products':user_products
+    }
+    return render(request,'seller_profile/shop_detail.html',context)
 
