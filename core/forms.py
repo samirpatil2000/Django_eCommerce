@@ -1,7 +1,7 @@
 from django import forms
 from django_countries.fields import CountryField
-
-
+from mptt.forms import TreeNodeChoiceField
+from .models import Comment
 
 PAYMENT_CHOICES = (
     ('GP', 'GooglePay'),
@@ -21,4 +21,6 @@ class CheckoutForm(forms.Form):
                                       choices=PAYMENT_CHOICES)
 
 
+class CommentForm(TreeNodeChoiceField):
+    parent=TreeNodeChoiceField(queryset=Comment.objects.all())
 

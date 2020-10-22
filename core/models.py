@@ -9,6 +9,9 @@ from django.shortcuts import render,reverse
 from django.utils.text import slugify
 from django_countries.fields import CountryField
 from seller_profile.models import SellerProfileForUser
+
+from mptt.models import MPTTModel,TreeForeignKey
+
 CATEGORY_CHOICES=(
     ('S', 'MAC'),
     ('SW', 'MAC PRO'),
@@ -166,6 +169,20 @@ def pre_save_slug(sender,instance,*args,**kwargs):
         instance.slug=slugify(f'{instance.title}-{instance.random_string_gen_for_slug}')
 pre_save.connect(pre_save_slug,sender=Item)
 
+
+class Comment(MPTTModel):
+    user=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    parent=TreeForeignKey('self',on_delete=models.CASCADE,blank=True,null=True,related_name='children')
+    item=models.ForeignKey(Item,on_delete=models.CASCADE)
+    content = models.TextField(default="This is the comment")
+    publish = models.DateTimeField(auto_now_add=True)
+    status = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f'{self.user} {self.item.title}'
+
+    class MPTTMeta:
+        order_insertion_by = ['publish']
 
 
 

@@ -1,6 +1,8 @@
 {% extends 'aws/base.html' %}
 {% block body %}
 {% load static %}
+              {% load mptt_tags %}
+
   <body>
     <!--================Header Menu Area =================-->
 
@@ -183,7 +185,8 @@
     <section class="product_description_area">
 
       <div class="container">
-        {% comment %}
+        {% comment %}                {% endcomment %}
+
         <ul class="nav nav-tabs" id="myTab" role="tablist">
           <li class="nav-item">
             <a
@@ -234,6 +237,7 @@
             >
           </li>
         </ul>
+
         <div class="tab-content" id="myTabContent">
           <div
             class="tab-pane fade"
@@ -357,27 +361,34 @@
             <div class="row">
               <div class="col-lg-6">
                 <div class="comment_list">
+                  {# for comment in comments #}
+                  {% recursetree comments %}
                   <div class="review_item">
                     <div class="media">
                       <div class="d-flex">
                         <img
-                          src="img/product/single-product/review-1.png"
+                          src="{% static 'aws/img/product/single-product/review-1.png' %}"
                           alt=""
                         />
                       </div>
                       <div class="media-body">
-                        <h4>Blake Ruiz</h4>
-                        <h5>12th Feb, 2017 at 05:56 pm</h5>
+                        <h4>{{node.user.username}}</h4>
+                        <h5>{{node.publish}}</h5>
                         <a class="reply_btn" href="#">Reply</a>
                       </div>
                     </div>
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                      sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                      ullamco laboris nisi ut aliquip ex ea commodo
+                      {{ node.content }}
                     </p>
                   </div>
+                 {% if not node.is_leaf_node %}
+                    <div class="children pl-2 pl-md-5">
+                      {{ children }}
+                    </div>
+                 {% endif %}
+                  {% endrecursetree %}
+                  {# endfor #}
+                  {% comment %}
                   <div class="review_item reply">
                     <div class="media">
                       <div class="d-flex">
@@ -420,6 +431,7 @@
                       ullamco laboris nisi ut aliquip ex ea commodo
                     </p>
                   </div>
+                  {% endcomment %}
                 </div>
               </div>
               <div class="col-lg-6">
@@ -737,7 +749,6 @@
             </div>
           </div>
         </div>
-        {% endcomment %}
       </div>
     </section>
 

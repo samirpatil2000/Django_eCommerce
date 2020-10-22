@@ -8,7 +8,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render,get_object_or_404,redirect,reverse
 from django.views.generic.base import View
 
-from.models import Item,OrderItem,Order,BillingAddress,Payment,FavouriteList,Category,SubCategory,Brand,ProductViewByUser
+from.models import Item,OrderItem,Order,BillingAddress,Payment,FavouriteList,Category,SubCategory,Brand,ProductViewByUser,Comment
 from seller_profile.models import SellerProfileForUser
 from django.views.generic import ListView,DetailView,CreateView
 from django.utils import timezone
@@ -102,13 +102,15 @@ class TestItemDetailView(DetailView):
 
 def product_detail_view(request,slug):
     item = get_object_or_404(Item, slug=slug)
+    comment=Comment.objects.filter(item=item)
     template_name = 'aws/single-product.html'
 
     if request.user.is_authenticated:
         ProductViewByUser.objects.get_or_create(user=request.user,product=item)
 
     context={
-        'object':item
+        'object':item,
+        'comments':comment,
     }
     return render(request,template_name,context)
 
