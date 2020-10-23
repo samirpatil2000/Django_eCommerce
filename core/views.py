@@ -8,12 +8,16 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render,get_object_or_404,redirect,reverse
 from django.views.generic.base import View
 
-from.models import Item,OrderItem,Order,BillingAddress,Payment,FavouriteList,Category,SubCategory,Brand,ProductViewByUser,Comment
+from.models import (Item,OrderItem,Order,
+                    BillingAddress,Payment,FavouriteList,
+                    Category,SubCategory,Brand,
+                    ProductViewByUser,Review,
+                    Comment)
 from seller_profile.models import SellerProfileForUser
 from django.views.generic import ListView,DetailView,CreateView
 from django.utils import timezone
 
-
+from .forms import CommentForm,ReviewForm
 
 
 import random
@@ -103,16 +107,51 @@ class TestItemDetailView(DetailView):
 def product_detail_view(request,slug):
     item = get_object_or_404(Item, slug=slug)
     comment=Comment.objects.filter(item=item)
+    reviews=Review.objects.filter(item=item)
     template_name = 'aws/single-product.html'
+    context={
+
+    }
+
+
 
     if request.user.is_authenticated:
         ProductViewByUser.objects.get_or_create(user=request.user,product=item)
 
-    context={
-        'object':item,
-        'comments':comment,
-    }
-    return render(request,template_name,context)
+    commentform = CommentForm(request.POST)
+    reviewform=ReviewForm(request.POST)
+    if request.user.is_authenticated:
+        if request.method=='POST':
+            if commentform.is_valid():
+                add_comment=commentform.save(commit=False)
+                commentform.instance.user=request.user
+                commentform.instance.item=item
+                add_comment.save()
+                return redirect('product-detail', slug)
+
+
+        #TODO you have to add here roduct order list
+        if request.method=='POST':
+            if reviewform.is_valid():
+                add_review=reviewform.save(commit=False)
+                commentform.instance.user=request.user
+                commentform.instance.item=item
+                add_review.save()
+                return redirect('product-detail', slug)
+
+    context['commentform']=commentform
+
+    context['object']=item
+    context['comments']=comment
+    return render(request,
+                  template_name,
+                  {
+                      'object':item,
+                      'comments':comment,
+                      'commentform':commentform,
+                      'reviews':reviews,
+                       'reviewform':reviewform,
+                  })
 
 
 

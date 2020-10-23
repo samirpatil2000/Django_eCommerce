@@ -24,8 +24,8 @@ def create_seller_profile_view(request):
             create_shop = form.save(commit=False)
             messages.info(request," You have successfully created your shop")
             create_shop.save()
-            context['form']=form
             return redirect('seller_home')
+    context['form'] = form
     return render(request, 'seller_profile/create_seller_form.html', {'form': form})
 
 @login_required

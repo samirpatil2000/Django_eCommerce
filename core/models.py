@@ -11,6 +11,8 @@ from django_countries.fields import CountryField
 from seller_profile.models import SellerProfileForUser
 
 from mptt.models import MPTTModel,TreeForeignKey
+from django.core.validators import MaxValueValidator,MinValueValidator
+
 
 CATEGORY_CHOICES=(
     ('S', 'MAC'),
@@ -184,6 +186,22 @@ class Comment(MPTTModel):
     class MPTTMeta:
         order_insertion_by = ['publish']
 
+def default_review():
+    n=random.randrange(0,6)
+    return n
+
+class Review(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    item=models.ForeignKey(Item,on_delete=models.CASCADE)
+    content = models.TextField(default="This is the comment")
+    rate=models.IntegerField(default=default_review,
+                             validators=[
+                                 MinValueValidator(1),
+                                 MaxValueValidator(5)
+                                         ])
+
+    def __str__(self):
+        return f'{self.user.username}--{self.item.title}'
 
 
 #  shopping cart

@@ -1,6 +1,7 @@
 {% extends 'aws/base.html' %}
 {% block body %}
 {% load static %}
+{% load crispy_forms_tags %}
               {% load mptt_tags %}
 
   <body>
@@ -212,6 +213,7 @@
               >Specification</a
             >
           </li>
+          {# comment #}
           <li class="nav-item">
             <a
               class="nav-link"
@@ -224,6 +226,7 @@
               >Comments</a
             >
           </li>
+          {# endcomment #}
           <li class="nav-item">
             <a
               class="nav-link active"
@@ -437,6 +440,19 @@
               <div class="col-lg-6">
                 <div class="review_box">
                   <h4>Post a comment</h4>
+                  <form method="post" action=".">
+                    {% csrf_token %}
+                        <div class="col-md-12">
+                              <fieldset class="form-group">
+                                  <legend class="'border-bottom mb-4">ADD COMMENT</legend>
+                                  {{ commentform | crispy }}
+                              </fieldset>
+                              <div class="form-group">
+                                  <button class=" btn btn-primary-info" type="submit">POST</button>
+                              </div>
+                          </div>
+                  </form>
+                  {% comment %}
                   <form
                     class="row contact_form"
                     action="contact_process.php"
@@ -489,15 +505,12 @@
                       </div>
                     </div>
                     <div class="col-md-12 text-right">
-                      <button
-                        type="submit"
-                        value="submit"
-                        class="btn submit_btn"
-                      >
+                      <button type="submit" value="submit" class="btn submit_btn">
                         Submit Now
                       </button>
                     </div>
                   </form>
+                  {% endcomment %}
                 </div>
               </div>
             </div>
@@ -515,12 +528,12 @@
                     <div class="box_total">
                       <h5>Overall</h5>
                       <h4>4.0</h4>
-                      <h6>(03 Reviews)</h6>
+                      <h6>({{reviews.count}} Reviews)</h6>
                     </div>
                   </div>
                   <div class="col-6">
                     <div class="rating_list">
-                      <h3>Based on 3 Reviews</h3>
+                      <h3>Based on {{reviews.count}} Reviews</h3>
                       <ul class="list">
                         <li>
                           <a href="#"
@@ -577,30 +590,50 @@
                   </div>
                 </div>
                 <div class="review_list">
+                  {% for review in reviews %}
                   <div class="review_item">
                     <div class="media">
                       <div class="d-flex">
                         <img
-                          src="img/product/single-product/review-1.png"
+                          src="{% static 'aws/img/product/single-product/review-1.png' %}"
                           alt=""
                         />
                       </div>
                       <div class="media-body">
-                        <h4>Blake Ruiz</h4>
+                        <h4>{{ review.user.username }}</h4>
+                        {% if review.rate == 1%}
+                        <i class="fa fa-star"></i>
+                        {% endif %}
+                        {% if review.rate == 2%}
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        {% endif %}
+                        {% if review.rate == 3%}
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        {% endif %}
+                        {% if review.rate == 4%}
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        {% endif %}
+                        {% if review.rate == 5%}
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
+                        {% endif %}
                       </div>
                     </div>
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                      sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                      ullamco laboris nisi ut aliquip ex ea commodo
+                      {{ review.content }}
                     </p>
                   </div>
+                  {% endfor %}
+                  {% comment %}
                   <div class="review_item">
                     <div class="media">
                       <div class="d-flex">
@@ -649,6 +682,7 @@
                       ullamco laboris nisi ut aliquip ex ea commodo
                     </p>
                   </div>
+                  {% endcomment %}
                 </div>
               </div>
               <div class="col-lg-6">
@@ -683,55 +717,32 @@
                     </li>
                   </ul>
                   <p>Outstanding</p>
+                  <form method="post" action=".">
+                    {% csrf_token %}
+                        <div class="col-md-12">
+                              <fieldset class="form-group">
+                                  {{ reviewform | crispy }}
+                              </fieldset>
+                              <div class="form-group">
+                                  <button class=" btn btn-outline-info" type="submit">Post</button>
+                              </div>
+                          </div>
+                  </form>
                   <form
                     class="row contact_form"
-                    action="contact_process.php"
+                    action="."
                     method="post"
                     id="contactForm"
-                    novalidate="novalidate"
-                  >
+                    novalidate="novalidate">
+                          {% csrf_token %}
                     <div class="col-md-12">
                       <div class="form-group">
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="name"
-                          name="name"
-                          placeholder="Your Full name"
-                        />
+                        {{ review.content }}
                       </div>
                     </div>
                     <div class="col-md-12">
                       <div class="form-group">
-                        <input
-                          type="email"
-                          class="form-control"
-                          id="email"
-                          name="email"
-                          placeholder="Email Address"
-                        />
-                      </div>
-                    </div>
-                    <div class="col-md-12">
-                      <div class="form-group">
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="number"
-                          name="number"
-                          placeholder="Phone Number"
-                        />
-                      </div>
-                    </div>
-                    <div class="col-md-12">
-                      <div class="form-group">
-                        <textarea
-                          class="form-control"
-                          name="message"
-                          id="message"
-                          rows="1"
-                          placeholder="Review"
-                        ></textarea>
+                        {{ review.rate }}
                       </div>
                     </div>
                     <div class="col-md-12 text-right">
