@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django_countries',
     'crispy_forms',
+    'mptt',
                                   #
     # 'allauth',                 #
     # 'allauth.account',        # # # # # # # # # #                #TODO by removeing this added app name and model name
