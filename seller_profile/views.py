@@ -125,3 +125,11 @@ def delete_product(request,slug):
         return HttpResponse("Restricted  ...!")
     product.delete()
     return redirect('seller_home')
+
+
+def your_product(request):
+    user_products=Item.objects.filter(sellerprofileshop__user=request.user)
+    context = {
+        'products':user_products,
+    }
+    return render(request, 'aws/seller_all_products.html', context)

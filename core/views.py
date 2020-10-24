@@ -645,3 +645,5 @@ def test_function_with_index(request):
         'object_list':items
     }
     return render(request,'core/index.html',context)
+
+
