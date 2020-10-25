@@ -28,7 +28,7 @@ class SellerProfileForUser(models.Model):
     name=models.CharField(max_length=100,default="Seller")
     seller_category=models.ForeignKey(SellerCategory,on_delete=models.CASCADE,blank=True,null=True)
     seller_profile=models.ForeignKey(SellerProfileCreateAdmin,on_delete=models.CASCADE)
-    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,blank=True,null=True)
+    #user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,blank=True,null=True)
 
 
     def __str__(self):

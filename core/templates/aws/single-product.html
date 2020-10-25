@@ -35,10 +35,12 @@
     <!--================Single Product Area =================-->
     <div class="product_image_area">
       <div class="container">
+        {% if request.user == object.sellerprofileshop.seller_profile.user %}
         <div class="mb-20">
                 <a class="main_btn"  href="{{ object.get_update_item_url }}">Update</a>
                 <a class="main_btn" href="{{ object.get_delete_item_url }}">Delete</a>
         </div>
+        {% endif %}
         <div class="row s_product_inner">
           <div class="col-lg-6">
             <div class="s_product_img">
