@@ -30,7 +30,7 @@ def create_seller_profile_view(request):
 
 @login_required
 def seller_shops(request):
-    shops=SellerProfileForUser.objects.filter(user=request.user)
+    shops=SellerProfileForUser.objects.filter(seller_profile__user=request.user)
     context={
         'shops':shops
     }
@@ -65,6 +65,8 @@ def shop_details_product(request,id):
     user_shop=get_object_or_404(SellerProfileForUser,id=id)
     user_products=Item.objects.filter(sellerprofileshop=user_shop)
 
+    if request.user != user_shop.seller_profile.user:
+        return HttpResponse("Restricted  ...!")
     context={
         'shop':user_shop,
         'products':user_products
