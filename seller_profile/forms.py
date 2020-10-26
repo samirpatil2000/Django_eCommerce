@@ -7,6 +7,20 @@ class CreateSellerProfileForm(forms.ModelForm):
         model=SellerProfileForUser
         fields=['name','seller_category']
 
+class UpdateSellerProfileForm(forms.ModelForm):
+    class Meta:
+        model=SellerProfileForUser
+        fields=['name','seller_category']
+
+    def save(self, commit=True):
+        shop=self.instance
+        shop.name=self.cleaned_data['name']
+        shop.seller_category=self.cleaned_data['seller_category']
+
+        if commit:
+            shop.save()
+        return shop
+
 class AddProductForm(forms.ModelForm):
     # sellerprofileshop=SellerProfileForUser.objects.filter(seller_profile__user=)
     class Meta:

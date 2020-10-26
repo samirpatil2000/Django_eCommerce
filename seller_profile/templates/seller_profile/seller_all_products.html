@@ -35,7 +35,7 @@
       <div class="row justify-content-center">
         <div class="col-lg-12">
           <div class="main_title">
-            <h2><span>Your Shop</span></h2>
+            <h2><span>Your Products</span></h2>
             <h3><span></span></h3>
             <p></p>
           </div>
@@ -71,6 +71,7 @@
                       </div>
                       <div class="media-body">
                         <p>{{ order_item.title }}</p>
+                        <p>{{ order_item.sellerprofileshop.name }}</p>
                       </div>
                     </div>
                   </td>
@@ -103,10 +104,9 @@
                 </tr>
 
               {% endfor %}
-
                 <tr class="bottom_button">
                   <td>
-                    <a class="main_btn" href="{% url 'add_product_from_shop' shop.id %}">Add Product</a>
+                    <a class="main_btn" href="#">Add Product</a>
                   </td>
                   <td></td>
                   <td></td>

@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from .models import SellerProfileForUser,SellerProfileCreateAdmin
 from django.views.generic import CreateView,UpdateView
-from .forms import CreateSellerProfileForm,AddProductForm,AddProductFromShop,UpdateProductForm
+from .forms import CreateSellerProfileForm,AddProductForm,AddProductFromShop,UpdateProductForm,UpdateSellerProfileForm
 from core.models import Item
 # Create your views here.
 
@@ -28,6 +28,41 @@ def create_seller_profile_view(request):
     context['form'] = form
     return render(request, 'seller_profile/create_seller_form.html', {'form': form})
 
+def update_seller_profile_view(request,id):
+    seller_shop=get_object_or_404(SellerProfileForUser,id=id)
+
+    if request.POST:
+        updateSellerShop=UpdateSellerProfileForm(request.POST or None,instance=seller_shop)
+        if updateSellerShop.is_valid():
+            obj=updateSellerShop.save(commit=True)
+            obj.save()
+            messages.info(request,f'{seller_shop.name} is updated')
+            return redirect('shop_details_product',id=id)
+
+    form=UpdateSellerProfileForm(
+        initial={
+            "name": seller_shop.name,
+            "seller_category": seller_shop.seller_category,
+        }
+    )
+    context={
+        'form':form
+    }
+
+
+    return render(request,'seller_profile/edit_seller_shop_form.html',context)
+
+def delete_seller_shop(request,id):
+    seller_shop=get_object_or_404(SellerProfileForUser,id=id)
+    seller_shop.delete()
+    return redirect('seller_home')
+
+
+
+
+
+
+
 @login_required
 def seller_shops(request):
     shops=SellerProfileForUser.objects.filter(seller_profile__user=request.user)
@@ -35,6 +70,7 @@ def seller_shops(request):
         'shops':shops
     }
     return render(request,'seller_profile/seller_home.html',context)
+
 def seller_dashbord(request):
     context={
 
@@ -120,6 +156,7 @@ def update_product_from_shop(request,slug):
     }
     return render(request,'seller_profile/edit_product_from_shop.html',context)
 
+@login_required
 def delete_product(request,slug):
     product=get_object_or_404(Item,slug=slug)
     seller_shop=product.sellerprofileshop
@@ -128,10 +165,10 @@ def delete_product(request,slug):
     product.delete()
     return redirect('seller_home')
 
-
-def your_product(request):
-    user_products=Item.objects.filter(sellerprofileshop__user=request.user)
+@login_required
+def seller_all_products(request):
+    user_products=Item.objects.filter(sellerprofileshop__seller_profile__user=request.user)
     context = {
         'products':user_products,
     }
-    return render(request, 'aws/seller_all_products.html', context)
+    return render(request, 'seller_profile/seller_all_products.html', context)
